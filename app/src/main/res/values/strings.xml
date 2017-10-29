@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Moody Music</string>
+    <string name="player_name">Mood Player</string>
+    <string name="detect_name">Mood Detect</string>
 </resources>
