@@ -1,5 +1,11 @@
 <resources>
+    <!-- UI -->
     <string name="app_name">Moody Music</string>
     <string name="player_name">Mood Player</string>
     <string name="detect_name">Mood Detect</string>
+    <string name="button_detect">Detect Emotion</string>
+
+    <!-- Camera -->
+    <string name="request_permission">This sample needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 </resources>

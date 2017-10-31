@@ -10,7 +10,7 @@ import ch.hearc.moodymusic.ui.ViewPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    public static final String TAG = "MainActivity";
 
     //UI
     private Toolbar mToolBar;
@@ -18,8 +18,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPagerAdapter mViewPagerAdapter;
     private SlidingTabLayout mTabs;
     private CharSequence[] mTabTitles;
-// {Resources.getSystem().getString(R.string.detect_name),
-//            Resources.getSystem().getString(R.string.player_name)};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
