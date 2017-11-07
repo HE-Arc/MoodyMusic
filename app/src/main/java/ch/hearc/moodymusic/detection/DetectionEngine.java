@@ -48,7 +48,7 @@ public class DetectionEngine extends com.github.mhendred.face4j.examples.ClientE
 
 
     public void detect() {
-            faceClient.detect(URL_WITH_FACES);
+        faceClient.detect(URL_WITH_FACES);
 //        try {
 ////            Photo photo = faceClient.detect(URL_WITH_FACES).get(0);
 //        } catch (FaceClientException e) {
