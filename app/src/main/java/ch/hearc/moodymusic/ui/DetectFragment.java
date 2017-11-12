@@ -20,6 +20,8 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,7 +58,7 @@ import java.io.OutputStream;
 import java.util.Set;
 
 import ch.hearc.moodymusic.R;
-import ch.hearc.moodymusic.detection.DetectionEngine;
+import ch.hearc.moodymusic.detection.DetectionRequester;
 
 public class DetectFragment extends Fragment
         implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -113,6 +115,7 @@ public class DetectFragment extends Fragment
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
             mCameraView.setFacing(CameraView.FACING_FRONT);
+
         }
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.take_picture);
         if (fab != null) {
@@ -299,17 +302,21 @@ public class DetectFragment extends Fragment
         @Override
         public void onPictureTaken(CameraView cameraView, final byte[] data) {
             Log.d(TAG, "onPictureTaken " + data.length);
-            Toast.makeText(cameraView.getContext(), R.string.picture_taken, Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(cameraView.getContext(), R.string.picture_taken, Toast.LENGTH_SHORT).show();
+
             getBackgroundHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                             "picture.jpg");
+
                     OutputStream os = null;
                     try {
+                        Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
                         os = new FileOutputStream(file);
-                        os.write(data);
+                        image.compress(Bitmap.CompressFormat.JPEG, 75, os);
+
+                        //os.write(data);
                         os.close();
                     } catch (IOException e) {
                         Log.w(TAG, "Cannot write to " + file, e);
@@ -322,9 +329,9 @@ public class DetectFragment extends Fragment
                             }
                         }
                     }
-
-                    DetectionEngine detectionEngine = new DetectionEngine();
-                    detectionEngine.detect();
+                    new DetectionRequester(getActivity()).execute(file.getPath());
+//                    DetectionEngine detectionEngine = new DetectionEngine();
+//                    detectionEngine.detect();
                 }
             });
         }

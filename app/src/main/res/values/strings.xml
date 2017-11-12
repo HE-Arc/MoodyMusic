@@ -15,4 +15,7 @@
     <string name="flash_auto">Flash auto</string>
     <string name="flash_off">Flash off</string>
     <string name="flash_on">Flash on</string>
+
+    <!-- Detection -->
+    <string name="no_connection">Error impossible to reach the web service</string>
 </resources>
