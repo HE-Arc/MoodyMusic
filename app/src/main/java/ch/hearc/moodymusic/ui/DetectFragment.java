@@ -60,8 +60,7 @@ import java.util.Set;
 import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.detection.DetectionRequester;
 
-public class DetectFragment extends Fragment
-        implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class DetectFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String TAG = "DetectFragment";
 
@@ -117,13 +116,16 @@ public class DetectFragment extends Fragment
             mCameraView.setFacing(CameraView.FACING_FRONT);
 
         }
+
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.take_picture);
         if (fab != null) {
             fab.setOnClickListener(mOnClickListener);
         }
+
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
@@ -134,11 +136,9 @@ public class DetectFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             mCameraView.start();
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                Manifest.permission.CAMERA)) {
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
             ConfirmationDialogFragment
                     .newInstance(R.string.camera_permission_confirmation,
                             new String[]{Manifest.permission.CAMERA},
@@ -146,8 +146,7 @@ public class DetectFragment extends Fragment
                             R.string.camera_permission_not_granted)
                     .show(getActivity().getSupportFragmentManager(), FRAGMENT_DIALOG);
         } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},
-                    REQUEST_CAMERA_PERMISSION);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
         }
     }
 
@@ -160,6 +159,7 @@ public class DetectFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         if (mBackgroundHandler != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 mBackgroundHandler.getLooper().quitSafely();
@@ -171,13 +171,13 @@ public class DetectFragment extends Fragment
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CAMERA_PERMISSION:
                 if (permissions.length != 1 || grantResults.length != 1) {
                     throw new RuntimeException("Error on requesting camera permission.");
                 }
+
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getActivity(), R.string.camera_permission_not_granted,
                             Toast.LENGTH_SHORT).show();
@@ -204,6 +204,7 @@ public class DetectFragment extends Fragment
         switch (item.getItemId()) {
             case R.id.aspect_ratio:
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
                 if (mCameraView != null
                         && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
                     final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
@@ -211,6 +212,7 @@ public class DetectFragment extends Fragment
                     AspectRatioFragment.newInstance(ratios, currentRatio)
                             .show(fragmentManager, FRAGMENT_DIALOG);
                 }
+
                 return true;
             case R.id.switch_flash:
                 if (mCameraView != null) {
@@ -219,6 +221,7 @@ public class DetectFragment extends Fragment
                     item.setIcon(FLASH_ICONS[mCurrentFlash]);
                     mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
                 }
+
                 return true;
             case R.id.switch_camera:
                 if (mCameraView != null) {
@@ -226,6 +229,7 @@ public class DetectFragment extends Fragment
                     mCameraView.setFacing(facing == CameraView.FACING_FRONT ?
                             CameraView.FACING_BACK : CameraView.FACING_FRONT);
                 }
+
                 return true;
         }
         return false;
@@ -286,8 +290,7 @@ public class DetectFragment extends Fragment
         return mBackgroundHandler;
     }
 
-    private CameraView.Callback mCallback
-            = new CameraView.Callback() {
+    private CameraView.Callback mCallback = new CameraView.Callback() {
 
         @Override
         public void onCameraOpened(CameraView cameraView) {
@@ -314,9 +317,7 @@ public class DetectFragment extends Fragment
                     try {
                         Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
                         os = new FileOutputStream(file);
-                        image.compress(Bitmap.CompressFormat.JPEG, 75, os);
-
-                        //os.write(data);
+                        image.compress(Bitmap.CompressFormat.JPEG, 60, os);
                         os.close();
                     } catch (IOException e) {
                         Log.w(TAG, "Cannot write to " + file, e);
@@ -329,13 +330,12 @@ public class DetectFragment extends Fragment
                             }
                         }
                     }
-                    new DetectionRequester(getActivity()).execute(file.getPath());
-//                    DetectionEngine detectionEngine = new DetectionEngine();
-//                    detectionEngine.detect();
+
+                    DetectionRequester detectionRequester = new DetectionRequester(getActivity());
+                    detectionRequester.execute(file.getPath());
                 }
             });
         }
-
     };
 
     public static class ConfirmationDialogFragment extends DialogFragment {
