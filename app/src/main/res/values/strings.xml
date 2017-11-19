@@ -6,8 +6,8 @@
     <string name="button_detect">Detect Emotion</string>
 
     <!-- Camera -->
-    <string name="camera_permission_confirmation">This app demonstrates the usage of CameraView. In order to do that, it needs permission to access camera.</string>
-    <string name="camera_permission_not_granted">Camera app cannot do anything without camera permission.</string>
+    <string name="camera_permission_confirmation">This app needs permission to access camera.</string>
+    <string name="camera_permission_not_granted">The emotion detection won\'t work without camera permission.</string>
     <string name="picture_taken">Picture taken</string>
     <string name="aspect_ratio">Aspect ratio</string>
     <string name="switch_flash">Switch flash</string>
@@ -18,4 +18,8 @@
 
     <!-- Detection -->
     <string name="no_connection">Error impossible to reach the web service</string>
+    <!-- <string name="no_face">"No face has been detected"</string> -->
+
+    <!-- Connectivity -->
+    <string name="no_internet">You need an internet connection to use this functionality</string>
 </resources>

@@ -1,8 +1,8 @@
 package ch.hearc.moodymusic.detection;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,6 +18,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -41,15 +42,11 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
     private ProgressDialog progressDialog;
     private AlertDialog alertDialog;
     private String error;
+    private Context context;
 
-    public DetectionRequester(Activity activity) {
-        progressDialog = new ProgressDialog(activity);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            alertDialog = new AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog).create();
-        } else {
-            alertDialog = new AlertDialog.Builder(activity).create();
-        }
+    public DetectionRequester(Context context) {
+        progressDialog = new ProgressDialog(context);
+        this.context = context;
     }
 
     @Override
@@ -61,12 +58,18 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
         progressDialog.show();
 
         error = "";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            alertDialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog).create();
+        } else {
+            alertDialog = new AlertDialog.Builder(context).create();
+        }
     }
 
     @Override
     protected String doInBackground(String... strings) {
         HttpParams httpParams = new BasicHttpParams();
-        //HttpConnectionParams.setConnectionTimeout(httpParams, 10000);
+        HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
         httpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 
         HttpClient httpclient = new DefaultHttpClient(httpParams);
@@ -145,11 +148,10 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
         }
     }
 
-    protected void onProgressUpdate(Integer... progress) {
-
-    }
-
+    @Override
     protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+
         if (progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
@@ -158,8 +160,7 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
     }
 
     private void showDialogMood(String mood) {
-        if(mood != null)
-        {
+        if (mood != null) {
             alertDialog.setTitle("Mood Detection");
             alertDialog.setMessage("You seem to be " + mood + " !\n\n" + "Would you like to play some music that fit your current mood ?");
 
@@ -179,14 +180,14 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
 
             alertDialog.setIcon(android.R.drawable.ic_dialog_info);
 
-        }else{
+        } else {
             alertDialog.setTitle("Sorry");
             alertDialog.setMessage(error + " !");
 
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                        //Nothing
+                            //Nothing
                         }
                     });
 
@@ -194,7 +195,6 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
         }
 
         alertDialog.show();
-
     }
 
 }

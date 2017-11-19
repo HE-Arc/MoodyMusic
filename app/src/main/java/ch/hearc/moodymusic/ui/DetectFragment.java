@@ -22,7 +22,6 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -59,10 +58,11 @@ import java.util.Set;
 
 import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.detection.DetectionRequester;
+import ch.hearc.moodymusic.tools.ConnectivityTools;
 
 public class DetectFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private static final String TAG = "DetectFragment";
+    public static final String TAG = "DetectFragment";
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
 
@@ -97,8 +97,13 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.take_picture:
-                    if (mCameraView != null) {
-                        mCameraView.takePicture();
+                    if(ConnectivityTools.isNetworkAvailable(getContext()) && ConnectivityTools.isInternetAvailable()){
+                        if (mCameraView != null) {
+                            mCameraView.takePicture();
+                        }
+                    }
+                    else{
+                        Toast.makeText(getContext(), R.string.no_internet, Toast.LENGTH_LONG);
                     }
                     break;
             }
@@ -161,11 +166,7 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
         super.onDestroy();
 
         if (mBackgroundHandler != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                mBackgroundHandler.getLooper().quitSafely();
-            } else {
-                mBackgroundHandler.getLooper().quit();
-            }
+            mBackgroundHandler.getLooper().quitSafely();
             mBackgroundHandler = null;
         }
     }
@@ -307,13 +308,12 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
             Log.d(TAG, "onPictureTaken " + data.length);
             Toast.makeText(cameraView.getContext(), R.string.picture_taken, Toast.LENGTH_SHORT).show();
 
-            getBackgroundHandler().post(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                            "picture.jpg");
-
+                    File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),"picture.jpg");
                     OutputStream os = null;
+
                     try {
                         Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
                         os = new FileOutputStream(file);
@@ -331,7 +331,7 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
                         }
                     }
 
-                    DetectionRequester detectionRequester = new DetectionRequester(getActivity());
+                    DetectionRequester detectionRequester = new DetectionRequester(getContext());
                     detectionRequester.execute(file.getPath());
                 }
             });
