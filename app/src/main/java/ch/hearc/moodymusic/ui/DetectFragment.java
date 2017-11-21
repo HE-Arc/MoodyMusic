@@ -25,7 +25,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -63,9 +62,7 @@ import ch.hearc.moodymusic.tools.ConnectivityTools;
 public class DetectFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     public static final String TAG = "DetectFragment";
-
     private static final int REQUEST_CAMERA_PERMISSION = 1;
-
     private static final String FRAGMENT_DIALOG = "dialog";
 
     private static final int[] FLASH_OPTIONS = {
@@ -87,9 +84,7 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
     };
 
     private int mCurrentFlash;
-
     private CameraView mCameraView;
-
     private Handler mBackgroundHandler;
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -103,7 +98,7 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
                         }
                     }
                     else{
-                        Toast.makeText(getContext(), R.string.no_internet, Toast.LENGTH_LONG);
+                        Toast.makeText(getContext(), R.string.no_internet, Toast.LENGTH_LONG).show();
                     }
                     break;
             }
@@ -183,7 +178,6 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
                     Toast.makeText(getActivity(), R.string.camera_permission_not_granted,
                             Toast.LENGTH_SHORT).show();
                 }
-                // No need to start camera here; it is handled by onResume
                 break;
         }
     }
@@ -213,7 +207,6 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
                     AspectRatioFragment.newInstance(ratios, currentRatio)
                             .show(fragmentManager, FRAGMENT_DIALOG);
                 }
-
                 return true;
             case R.id.switch_flash:
                 if (mCameraView != null) {
@@ -222,7 +215,6 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
                     item.setIcon(FLASH_ICONS[mCurrentFlash]);
                     mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
                 }
-
                 return true;
             case R.id.switch_camera:
                 if (mCameraView != null) {
@@ -230,7 +222,6 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
                     mCameraView.setFacing(facing == CameraView.FACING_FRONT ?
                             CameraView.FACING_BACK : CameraView.FACING_FRONT);
                 }
-
                 return true;
         }
         return false;
@@ -280,15 +271,6 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
             Toast.makeText(getContext(), ratio.toString(), Toast.LENGTH_SHORT).show();
             mCameraView.setAspectRatio(ratio);
         }
-    }
-
-    private Handler getBackgroundHandler() {
-        if (mBackgroundHandler == null) {
-            HandlerThread thread = new HandlerThread("background");
-            thread.start();
-            mBackgroundHandler = new Handler(thread.getLooper());
-        }
-        return mBackgroundHandler;
     }
 
     private CameraView.Callback mCallback = new CameraView.Callback() {
