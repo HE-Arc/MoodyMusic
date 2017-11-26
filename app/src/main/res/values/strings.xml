@@ -16,6 +16,11 @@
     <string name="flash_off">Flash off</string>
     <string name="flash_on">Flash on</string>
 
+    <!-- File system -->
+    <string name="read_permission_confirmation">This app needs permission to access the file system</string>
+    <string name="read_permission_not_granted">The audio player won\'t work without file system permission.</string>
+
+
     <!-- Detection -->
     <string name="no_connection">Error impossible to reach the web service</string>
     <!-- <string name="no_face">"No face has been detected"</string> -->
