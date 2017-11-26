@@ -33,10 +33,8 @@ public class PlayerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_player, container, false);
 
-
-        Log.w(TAG, "TEST");
         ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
-        classificationEngine.initializeDatabaseWithSongs();
+        classificationEngine.initializeDatabaseWithSongs(0);
 
         return view;
     }

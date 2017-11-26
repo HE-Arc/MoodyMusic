@@ -25,43 +25,53 @@ public class ClassificationEngine {
 
     }
 
-    public void initializeDatabaseWithSongs() {
-        //creating selection for the database
-        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-        final String[] projection = new String[]{
-                MediaStore.Audio.Media.DISPLAY_NAME,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DATA};
+    public void initializeDatabaseWithSongs(int minDuration) {
+        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";// AND " + MediaStore.Audio.Media.DATA + " LIKE ? ";
 
-        //creating sort by for database
-        final String sortOrder = MediaStore.Audio.AudioColumns.TITLE
-                + " COLLATE LOCALIZED ASC";
+        final String[] projection = new String[]{
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DURATION}; //DATA = PATH
 
         //stating pointer
         Cursor cursor = null;
 
         try {
             //the table for query
-            Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            // query the db
-            cursor = mContext.getContentResolver().query(uri, projection, selection, null, sortOrder);
+            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+            //Query a specific folder
+            String pathTest = "/storage/0C04-3890/Test/*";
+            Log.w(TAG, "Path : " + pathTest);
+//            Uri uri = android.provider.MediaStore.Audio.Media.getContentUriForPath(path);
+
+            // query the content provider
+            cursor = mContext.getContentResolver().query(uri, projection, selection,new String[]{}, null);
 
             if (cursor != null) {
-
-
-                //go to the first row
+                int i = 0;
                 cursor.moveToFirst();
 
-
                 while (!cursor.isAfterLast()) {
-                    //collecting song information and store in array,
-                    //moving to the next row
-                    Log.w(TAG, cursor.getString(0));
-                    Log.w(TAG, cursor.getString(1));
-                    Log.w(TAG, cursor.getString(2));
-                    cursor.moveToNext();
+                    //collecting song information and store in array
+                    Log.w(TAG, cursor.getString(0) + " "
+                            + cursor.getString(1) + " "
+                            + cursor.getString(2) + " "
+                            + cursor.getString(3) + " "
+                            + cursor.getString(4));
+//                    Log.w(TAG, cursor.getString(1));
+//                    Log.w(TAG, cursor.getString(2));
 
+                    if(Integer.parseInt(cursor.getString(4)) > minDuration){
+                        //TODO
+                    }
+                    cursor.moveToNext();
+                    i++;
                 }
+
+                Log.w(TAG, "Number of music : " + i);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,22 +82,4 @@ public class ClassificationEngine {
             }
         }
     }
-
-//    private void populateMusicData(File file) {
-//        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-//        mmr.setDataSource(file.getAbsolutePath());
-//
-//        String name = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-//        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-//        String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-//        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//
-//        if (name != null && !name.equals("")) this.name = name;
-//        if (artist != null && !artist.equals("")) this.artist = artist;
-//        if (album != null && !album.equals("")) this.album = album;
-//        if (duration != null && !duration.equals("")) {
-//            this.duration = duration;
-//            this.time = Integer.parseInt(this.duration) / 1000;
-//        }
-//    }
 }
