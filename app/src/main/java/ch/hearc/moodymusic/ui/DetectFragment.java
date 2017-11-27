@@ -62,6 +62,9 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
 
+    //UI
+    private FloatingActionButton mFabTakePicture;
+
     private static final int[] FLASH_OPTIONS = {
             CameraView.FLASH_AUTO,
             CameraView.FLASH_OFF,
@@ -89,13 +92,14 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.take_picture:
-                    if(ConnectivityTools.isNetworkAvailable(getContext()) && ConnectivityTools.isInternetAvailable()){
+                    mFabTakePicture.setEnabled(false);
+                    if (ConnectivityTools.isNetworkAvailable(getContext()) && ConnectivityTools.isInternetAvailable()) {
                         if (mCameraView != null) {
                             mCameraView.takePicture();
                         }
-                    }
-                    else{
+                    } else {
                         Toast.makeText(getContext(), R.string.no_internet, Toast.LENGTH_LONG).show();
+                        mFabTakePicture.setEnabled(true);
                     }
                     break;
             }
@@ -114,9 +118,9 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
 
         }
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.take_picture);
-        if (fab != null) {
-            fab.setOnClickListener(mOnClickListener);
+        mFabTakePicture = (FloatingActionButton) view.findViewById(R.id.take_picture);
+        if (mFabTakePicture != null) {
+            mFabTakePicture.setOnClickListener(mOnClickListener);
         }
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
@@ -284,13 +288,14 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
 
         @Override
         public void onPictureTaken(CameraView cameraView, final byte[] data) {
+
             Log.d(TAG, "onPictureTaken " + data.length);
             Toast.makeText(cameraView.getContext(), R.string.picture_taken, Toast.LENGTH_SHORT).show();
 
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),"picture.jpg");
+                    File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "picture.jpg");
                     OutputStream os = null;
 
                     try {
@@ -312,6 +317,7 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
 
                     DetectionRequester detectionRequester = new DetectionRequester(getContext());
                     detectionRequester.execute(file.getPath());
+                    mFabTakePicture.setEnabled(true);
                 }
             });
         }

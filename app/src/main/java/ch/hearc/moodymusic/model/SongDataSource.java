@@ -8,7 +8,7 @@ import android.database.Cursor;
  * Created by axel.rieben on 21.11.2017.
  */
 
-public class SongDataSource extends DataSource{
+public class SongDataSource extends DataSource {
     public static final String TAG = "SongDataSource";
 
     private String[] mAllColumns = {DatabaseHandler.SONG_ID, DatabaseHandler.SONG_PATH, DatabaseHandler.SONG_ARTIST,
@@ -44,10 +44,23 @@ public class SongDataSource extends DataSource{
         mDatabase.delete(DatabaseHandler.TABLE_SONG, DatabaseHandler.SONG_ID + " = " + id, null);
     }
 
+    public int numSong() {
+        Cursor cursor = mDatabase.rawQuery("SELECT count(*) FROM " + DatabaseHandler.TABLE_SONG, null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+
+        return count;
+    }
+
+    public void clearSongs(){
+        mDatabase.execSQL("DELETE FROM " + DatabaseHandler.TABLE_SONG);
+    }
+
     private Song cursorToSong(Cursor cursor) {
-        Song song = new Song(cursor.getLong(0), cursor.getString(2),
-                cursor.getString(3), cursor.getString(4),
-                cursor.getString(5), cursor.getLong(6), cursor.getLong(7));
+        Song song = new Song(cursor.getLong(0), cursor.getString(1),
+                cursor.getString(2), cursor.getString(3),
+                cursor.getString(4), cursor.getLong(5), cursor.getLong(6));
         return song;
     }
 }

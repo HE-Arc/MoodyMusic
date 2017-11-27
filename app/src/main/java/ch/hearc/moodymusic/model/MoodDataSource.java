@@ -37,6 +37,15 @@ public class MoodDataSource extends DataSource {
         mDatabase.delete(DatabaseHandler.TABLE_MOOD, DatabaseHandler.TABLE_MOOD + " = " + id, null);
     }
 
+    public int numMood() {
+        Cursor cursor = mDatabase.rawQuery("SELECT count(*) FROM " + DatabaseHandler.TABLE_MOOD, null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+
+        return count;
+    }
+
     private Mood cursorToMood(Cursor cursor) {
         Mood mood = new Mood(cursor.getLong(0), cursor.getString(1));
         return mood;

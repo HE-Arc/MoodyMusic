@@ -39,12 +39,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + SONG_TITLE + " TEXT, "
             + SONG_ALBUM + " TEXT, "
             + SONG_MOOD_ID + " INTEGER, "
-            + SONG_USER_MOOD_ID + " INTEGER, "
+            + SONG_USER_MOOD_ID + " INTEGER"
             + ");";
 
     private static final String TABLE_MOOD_CREATE = "CREATE TABLE " + TABLE_MOOD + "("
             + MOOD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + MOOD_NAME + " TEXT NOT NULL, "
+            + MOOD_NAME + " TEXT NOT NULL"
             + ");";
 
     public DatabaseHandler(Context context) {
