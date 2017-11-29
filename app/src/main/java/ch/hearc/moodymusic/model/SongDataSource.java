@@ -44,6 +44,25 @@ public class SongDataSource extends DataSource {
         mDatabase.delete(DatabaseHandler.TABLE_SONG, DatabaseHandler.SONG_ID + " = " + id, null);
     }
 
+    public Song[] getSongWithNullMood(int limit)
+    {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_ID + " IS NULL",
+                null, null, null, null, Integer.toString(limit));
+
+        Song[] arraySong = new Song[cursor.getCount()];
+        cursor.moveToFirst();
+        int i=0;
+
+        while (!cursor.isAfterLast())
+        {
+            arraySong[i] = cursorToSong(cursor);
+            cursor.moveToNext();
+            i++;
+        }
+
+        return arraySong;
+    }
+
     public int numSong() {
         Cursor cursor = mDatabase.rawQuery("SELECT count(*) FROM " + DatabaseHandler.TABLE_SONG, null);
         cursor.moveToFirst();

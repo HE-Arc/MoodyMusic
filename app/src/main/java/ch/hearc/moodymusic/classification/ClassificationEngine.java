@@ -67,8 +67,6 @@ public class ClassificationEngine {
                                     + cursor.getString(2) + " "
                                     + cursor.getString(3) + " "
                                     + cursor.getString(4));
-//                    Log.w(TAG, cursor.getString(1));
-//                    Log.w(TAG, cursor.getString(2));
 
                             if (Integer.parseInt(cursor.getString(4)) > minDuration) {
 

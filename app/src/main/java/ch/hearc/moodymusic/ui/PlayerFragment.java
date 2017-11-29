@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.classification.ClassificationEngine;
+import ch.hearc.moodymusic.classification.ClassificationTask;
 import ch.hearc.moodymusic.tools.PermissionDialog;
 
 /**
@@ -34,8 +35,9 @@ public class PlayerFragment extends Fragment {
 
 
         ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
-        classificationEngine.initializeDatabaseWithSongs(0);
-
+        //classificationEngine.initializeDatabaseWithSongs(0);
+        ClassificationTask classificationTask = new ClassificationTask(getContext());
+        classificationTask.execute();
         return view;
     }
 
