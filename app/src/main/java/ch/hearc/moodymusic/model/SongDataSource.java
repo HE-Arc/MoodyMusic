@@ -59,6 +59,7 @@ public class SongDataSource extends DataSource {
             cursor.moveToNext();
             i++;
         }
+        cursor.close();
 
         return arraySong;
     }

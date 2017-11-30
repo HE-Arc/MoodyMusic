@@ -7,12 +7,12 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import ch.hearc.moodymusic.gracenote.GracenoteException;
-import ch.hearc.moodymusic.gracenote.GracenoteMetadata;
-import ch.hearc.moodymusic.gracenote.GracenoteMetadataOET;
-import ch.hearc.moodymusic.gracenote.GracenoteWebAPI;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
+import radams.gracenote.webapi.GracenoteException;
+import radams.gracenote.webapi.GracenoteMetadata;
+import radams.gracenote.webapi.GracenoteMetadataOET;
+import radams.gracenote.webapi.GracenoteWebAPI;
 
 import static ch.hearc.moodymusic.tools.Constants.GRACE_CLIENT_ID;
 import static ch.hearc.moodymusic.tools.Constants.GRACE_CLIENT_TAG;
