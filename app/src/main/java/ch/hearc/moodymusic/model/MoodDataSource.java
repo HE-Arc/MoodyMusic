@@ -31,10 +31,34 @@ public class MoodDataSource extends DataSource {
         return newMood;
     }
 
+    public long getOrCreate(String name) {
+        long id = getMoodId(name);
+
+        if (id == 0) {
+            Mood mood = createMood(name);
+            return mood.getId();
+        } else {
+            return id;
+        }
+    }
+
     public void deleteMood(Mood mood) {
         long id = mood.getId();
         System.out.println("Mood deleted with id: " + id);
         mDatabase.delete(DatabaseHandler.TABLE_MOOD, DatabaseHandler.TABLE_MOOD + " = " + id, null);
+    }
+
+    public long getMoodId(String name) {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD, new String[]{DatabaseHandler.MOOD_ID, DatabaseHandler.MOOD_NAME}, DatabaseHandler.MOOD_NAME + " = ?",
+                new String[]{name}, null, null, null);
+
+        long id = 0;
+        if (cursor.moveToFirst()) {
+            id = cursor.getLong(0);
+        }
+
+        cursor.close();
+        return id;
     }
 
     public int numMood() {

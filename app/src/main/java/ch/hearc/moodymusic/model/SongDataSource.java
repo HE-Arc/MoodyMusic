@@ -44,17 +44,21 @@ public class SongDataSource extends DataSource {
         mDatabase.delete(DatabaseHandler.TABLE_SONG, DatabaseHandler.SONG_ID + " = " + id, null);
     }
 
-    public Song[] getSongWithNullMood(int limit)
-    {
+    public void updateMood(long songId, long moodId) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHandler.SONG_MOOD_ID, moodId);
+        mDatabase.update(DatabaseHandler.TABLE_SONG, values, DatabaseHandler.SONG_ID + " = " + songId, null);
+    }
+
+    public Song[] getSongWithNullMood(int limit) {
         Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_ID + " IS NULL",
                 null, null, null, null, Integer.toString(limit));
 
         Song[] arraySong = new Song[cursor.getCount()];
         cursor.moveToFirst();
-        int i=0;
+        int i = 0;
 
-        while (!cursor.isAfterLast())
-        {
+        while (!cursor.isAfterLast()) {
             arraySong[i] = cursorToSong(cursor);
             cursor.moveToNext();
             i++;
@@ -73,7 +77,7 @@ public class SongDataSource extends DataSource {
         return count;
     }
 
-    public void clearSongs(){
+    public void clearSongs() {
         mDatabase.execSQL("DELETE FROM " + DatabaseHandler.TABLE_SONG);
     }
 

@@ -33,11 +33,11 @@ public class PlayerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_player, container, false);
 
-
         ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
-        //classificationEngine.initializeDatabaseWithSongs(0);
+//            classificationEngine.initializeDatabaseWithSongs(0);
         ClassificationTask classificationTask = new ClassificationTask(getContext());
         classificationTask.execute();
+
         return view;
     }
 
@@ -46,7 +46,7 @@ public class PlayerFragment extends Fragment {
         super.onResume();
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
             PermissionDialog.ConfirmationDialogFragment
                     .newInstance(R.string.read_permission_confirmation,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},

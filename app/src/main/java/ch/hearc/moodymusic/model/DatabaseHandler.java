@@ -14,7 +14,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //Songs table
     public static final String TABLE_SONG = "song";
-    public static final String SONG_ID = "id";
+    public static final String SONG_ID = "_id";
     public static final String SONG_PATH = "path";
     public static final String SONG_ARTIST = "artist";
     public static final String SONG_TITLE = "title";
@@ -24,7 +24,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //Mood table
     public static final String TABLE_MOOD = "mood";
-    public static final String MOOD_ID = "id";
+    public static final String MOOD_ID = "_id";
     public static final String MOOD_NAME = "name";
 
     //Database

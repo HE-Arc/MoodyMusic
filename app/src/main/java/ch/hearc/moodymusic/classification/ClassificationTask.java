@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import ch.hearc.moodymusic.model.MoodDataSource;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
 import radams.gracenote.webapi.GracenoteException;
@@ -30,10 +31,12 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
     private String mError;
     private Context mContext;
     private SongDataSource mSongDataSource;
+    private MoodDataSource mMoodDataSource;
 
     public ClassificationTask(Context context) {
         mProgressDialog = new ProgressDialog(context);
         mSongDataSource = new SongDataSource(context);
+        mMoodDataSource = new MoodDataSource(context);
         this.mContext = context;
     }
 
@@ -48,6 +51,7 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
         mError = "";
 
         mSongDataSource.open();
+        mMoodDataSource.open();
     }
 
     @Override
@@ -66,37 +70,60 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
             Song[] newSongs = mSongDataSource.getSongWithNullMood(10);
 
             for (int i = 0; i < newSongs.length; i++) {
-                String artist = newSongs[i].getArtist();
-                String title = newSongs[i].getTitle();
+                long songId = newSongs[i].getId();
+                String artist = removeSpecialCharacters(newSongs[i].getArtist());
+                String title = removeSpecialCharacters(newSongs[i].getTitle());
                 String album = newSongs[i].getAlbum();
 
-                Log.w(TAG, "Song : " + i + " " + artist + " " + title + " " + album + " " + newSongs[i].getMoodId());
-
-                if (artist != null && title != null) {
-                    results = api.searchTrack(newSongs[i].getArtist(), "", newSongs[i].getTitle());
+                if (!artist.isEmpty() && !title.isEmpty()) {
+                    results = api.searchTrack(artist, "", title);
                     ArrayList<GracenoteMetadataOET> moods = (ArrayList<GracenoteMetadataOET>) results.getAlbumData(0, "mood");
 
                     switch (moods.size()) {
                         case 0:
-                            Log.w(TAG, title + " no mood");
+                            Log.w(TAG, title + " no mood ");
                             break;
                         case 1:
                             Log.w(TAG, title + " one mood : " + moods.get(0).getText());
+                            updateMoodFromSong(newSongs[i], moods.get(0).getText());
                             break;
                         case 2:
-                            Log.w(TAG, title + " " + "two mood : " + moods.get(0).getText() + " " + moods.get(1).getText());
+                            Log.w(TAG, title + " " + " two mood : " + moods.get(0).getText() + " " + moods.get(1).getText());
+                            updateMoodFromSong(newSongs[i], moods.get(0).getText());
                             break;
                         default:
                             Log.w(TAG, title + " error");
                     }
                 }
             }
+
         } catch (GracenoteException e) {
             e.printStackTrace();
             return false;
         }
 
         return true;
+    }
+
+    private void updateMoodFromSong(Song song, String mood) {
+        Log.w(TAG, "Inserting mood : " + mood);
+        long moodId = mMoodDataSource.getOrCreate(mood);
+        mSongDataSource.updateMood(song.getId(), moodId);
+        Log.w(TAG, "Inserted !");
+    }
+
+    private String removeSpecialCharacters(String input) {
+        final String[] metaCharacters = {"\\", "^", "$", "{", "}", "[", "]", "(", ")", ".", "*", "+", "?", "|", "<", ">", "-", "&"};
+
+        for (int i = 0; i < metaCharacters.length; i++) {
+            if (input.contains(metaCharacters[i])) {
+//                output = input.replace(metaCharacters[i], "\\" + metaCharacters[i]);
+                input.replace(metaCharacters[i], "");
+
+            }
+        }
+
+        return input;
     }
 
     @Override

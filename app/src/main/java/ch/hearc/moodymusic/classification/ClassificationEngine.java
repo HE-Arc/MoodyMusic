@@ -40,20 +40,16 @@ public class ClassificationEngine {
                         MediaStore.Audio.Media.ALBUM,
                         MediaStore.Audio.Media.DATA,
                         MediaStore.Audio.Media.DURATION}; //DATA = PATH
-
-                //stating pointer
                 Cursor cursor = null;
 
                 try {
-                    //the table for query
                     Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
-                    //Query a specific folder
+                    //Query a specific folder ?
                     String pathTest = "/storage/0C04-3890/Test/*";
                     Log.w(TAG, "Path : " + pathTest);
 //            Uri uri = android.provider.MediaStore.Audio.Media.getContentUriForPath(path);
 
-                    // query the content provider
                     cursor = mContext.getContentResolver().query(uri, projection, selection, new String[]{}, null);
 
                     if (cursor != null) {
@@ -61,7 +57,6 @@ public class ClassificationEngine {
                         cursor.moveToFirst();
 
                         while (!cursor.isAfterLast()) {
-                            //collecting song information and store in array
                             Log.w(TAG, cursor.getString(0) + " "
                                     + cursor.getString(1) + " "
                                     + cursor.getString(2) + " "
