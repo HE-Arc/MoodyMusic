@@ -3,6 +3,9 @@ package ch.hearc.moodymusic.model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 /**
  * Created by axel.rieben on 21.11.2017.
@@ -68,6 +71,20 @@ public class SongDataSource extends DataSource {
         return arraySong;
     }
 
+    public ArrayList<Song> getSongListByMoodId(long moodId) {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_ID + " = ?",
+                new String[]{Long.toString(moodId)}, null, null, null);
+        ArrayList<Song> listSong = new ArrayList<Song>();
+
+        while (cursor.moveToNext()) {
+            Song song = cursorToSong(cursor);
+            listSong.add(song);
+        }
+
+        cursor.close();
+        return listSong;
+    }
+
     public int numSong() {
         Cursor cursor = mDatabase.rawQuery("SELECT count(*) FROM " + DatabaseHandler.TABLE_SONG, null);
         cursor.moveToFirst();
@@ -79,6 +96,21 @@ public class SongDataSource extends DataSource {
 
     public void clearSongs() {
         mDatabase.execSQL("DELETE FROM " + DatabaseHandler.TABLE_SONG);
+    }
+
+    public void showTable() {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, null,
+                null, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        Log.w(TAG, "Table Song");
+        while (!cursor.isAfterLast()) {
+            Song song = cursorToSong(cursor);
+            Log.w(TAG, "Id : " + song.getId() + " Path : " + song.getPath() + " Artist : " + song.getArtist() + " Title : " + song.getTitle() + " MoodId : " + song.getMoodId());
+            cursor.moveToNext();
+        }
+        cursor.close();
     }
 
     private Song cursorToSong(Cursor cursor) {

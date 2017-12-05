@@ -2,15 +2,19 @@ package ch.hearc.moodymusic.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,9 +24,11 @@ import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.classification.ClassificationEngine;
 import ch.hearc.moodymusic.model.Mood;
 import ch.hearc.moodymusic.model.MoodDataSource;
+import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
 import ch.hearc.moodymusic.tools.PermissionDialog;
 import ch.hearc.moodymusic.ui.player.MoodAdapter;
+import ch.hearc.moodymusic.ui.player.SongAdapter;
 
 /**
  * Created by axel.rieben on 29.10.2017.
@@ -35,12 +41,41 @@ public class PlayerFragment extends Fragment {
     private static final int REQUEST_READ_PERMISSION = 2;
     private static final String FRAGMENT_DIALOG = "dialog";
 
-    //UI
-    private ListView mListView;
-
     //Data
     private MoodDataSource mMoodDataSource;
     private SongDataSource mSongDataSource;
+    private ArrayList<Mood> listMood;
+    private ArrayList<Song> listSong;
+
+    //Player
+    private MediaPlayer mediaPlayer;
+    private int currentVolume;
+    private final static int MAX_VOLUME = 100;
+
+    //UI and listeners
+    private ListView mListView;
+    private AdapterView.OnItemClickListener listenerMood = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            initListWithSong(listMood.get(position).getId());
+        }
+    };
+    private AdapterView.OnItemClickListener listenerSong = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+
+            mediaPlayer = MediaPlayer.create(getContext(), Uri.parse(listSong.get(position).getPath().toString()));
+            mediaPlayer.setVolume((float) 12, (float) 12);
+            mediaPlayer.start();
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,16 +91,39 @@ public class PlayerFragment extends Fragment {
         mMoodDataSource = new MoodDataSource(getContext());
         mSongDataSource = new SongDataSource(getContext());
 
-        initListMood();
+        initListWithMood();
+
+        mediaPlayer = new MediaPlayer();
+
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    initListWithMood();
+                }
+                return true;
+            }
+        });
 
         return view;
     }
 
-    private void initListMood() {
+    private void initListWithMood() {
         mMoodDataSource.open();
-        ArrayList<Mood> listMood = mMoodDataSource.getMoodList();
-        MoodAdapter myAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, listMood);
-        mListView.setAdapter(myAdapter);
+        listMood = mMoodDataSource.getMoodList();
+        MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, listMood);
+        mListView.setAdapter(moodAdapter);
+        mListView.setOnItemClickListener(listenerMood);
+    }
+
+    private void initListWithSong(long moodId) {
+        mSongDataSource.open();
+        listSong = mSongDataSource.getSongListByMoodId(moodId);
+        SongAdapter songAdapter = new SongAdapter(getContext(), R.layout.player_list_item, listSong);
+        mListView.setAdapter(songAdapter);
+        mListView.setOnItemClickListener(listenerSong);
     }
 
     @Override

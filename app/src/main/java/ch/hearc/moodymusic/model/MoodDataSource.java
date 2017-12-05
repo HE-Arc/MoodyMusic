@@ -3,6 +3,7 @@ package ch.hearc.moodymusic.model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -84,6 +85,21 @@ public class MoodDataSource extends DataSource {
         cursor.close();
 
         return count;
+    }
+
+    public void showTable() {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD, mAllColumns, null,
+                null, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        Log.w(TAG, "Table Mood");
+        while (!cursor.isAfterLast()) {
+            Mood mood = cursorToMood(cursor);
+            Log.w(TAG, "Id : " + mood.getId() + " Name : " + mood.getName());
+            cursor.moveToNext();
+        }
+        cursor.close();
     }
 
     private Mood cursorToMood(Cursor cursor) {

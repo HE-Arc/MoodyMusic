@@ -10,21 +10,21 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import ch.hearc.moodymusic.R;
-import ch.hearc.moodymusic.model.Mood;
+import ch.hearc.moodymusic.model.Song;
 
 /**
  * Created by axel.rieben on 02.12.2017.
  */
 
-public class MoodAdapter extends ArrayAdapter<Mood> {
+public class SongAdapter extends ArrayAdapter<Song> {
 
-    private ArrayList<Mood> mListMood;
+    private ArrayList<Song> mListSong;
     private Context mContext;
 
-    public MoodAdapter(Context context, int textViewResourceId, ArrayList<Mood> listMood) {
-        super(context, textViewResourceId, listMood);
+    public SongAdapter(Context context, int textViewResourceId, ArrayList<Song> listSong) {
+        super(context, textViewResourceId, listSong);
         mContext = context;
-        mListMood = listMood;
+        mListSong = listSong;
     }
 
     @Override
@@ -36,10 +36,10 @@ public class MoodAdapter extends ArrayAdapter<Mood> {
         }
 
         TextView textTop = (TextView) view.findViewById(R.id.text_top);
-        textTop.setText(mListMood.get(position).getName());
+        textTop.setText(mListSong.get(position).getTitle());
 
         TextView textBottom = (TextView) view.findViewById(R.id.text_bottom);
-        textBottom.setText("Playlist");
+        textBottom.setText(mListSong.get(position).getArtist());
 
         return view;
     }
