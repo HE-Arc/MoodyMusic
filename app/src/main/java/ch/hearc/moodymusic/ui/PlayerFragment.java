@@ -1,10 +1,13 @@
 package ch.hearc.moodymusic.ui;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -26,6 +29,8 @@ import ch.hearc.moodymusic.model.Mood;
 import ch.hearc.moodymusic.model.MoodDataSource;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
+import ch.hearc.moodymusic.player.MusicService;
+import ch.hearc.moodymusic.player.MusicService.MusicBinder;
 import ch.hearc.moodymusic.tools.PermissionDialog;
 import ch.hearc.moodymusic.ui.player.MoodAdapter;
 import ch.hearc.moodymusic.ui.player.SongAdapter;
@@ -44,13 +49,28 @@ public class PlayerFragment extends Fragment {
     //Data
     private MoodDataSource mMoodDataSource;
     private SongDataSource mSongDataSource;
-    private ArrayList<Mood> listMood;
-    private ArrayList<Song> listSong;
+    private ArrayList<Mood> mListMood;
+    private ArrayList<Song> mListSong;
 
-    //Player
-    private MediaPlayer mediaPlayer;
-    private int currentVolume;
-    private final static int MAX_VOLUME = 100;
+    //Music service
+    private MusicService mMusicService;
+    private Intent mIntentService;
+    private boolean mIsBound = false;
+
+    private ServiceConnection musicConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicBinder binder = (MusicBinder) service;
+            mMusicService = binder.getService();
+            mIsBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mIsBound = false;
+        }
+    };
 
     //UI and listeners
     private ListView mListView;
@@ -58,31 +78,27 @@ public class PlayerFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            initListWithSong(listMood.get(position).getId());
+            initListWithSong(mListMood.get(position).getId());
+            mMusicService.setList(mListSong);
         }
     };
+
     private AdapterView.OnItemClickListener listenerSong = new AdapterView.OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
-
-            mediaPlayer = MediaPlayer.create(getContext(), Uri.parse(listSong.get(position).getPath().toString()));
-            mediaPlayer.setVolume((float) 12, (float) 12);
-            mediaPlayer.start();
+            mMusicService.setSong(position);
+            mMusicService.playSong();
         }
     };
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_player, container, false);
 
         ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
-//            classificationEngine.initializeDatabaseWithSongs(0);
+//        classificationEngine.initializeDatabaseWithSongs(0);
 //        ClassificationTask classificationTask = new ClassificationTask(getContext());
 //        classificationTask.execute();
 
@@ -92,8 +108,6 @@ public class PlayerFragment extends Fragment {
         mSongDataSource = new SongDataSource(getContext());
 
         initListWithMood();
-
-        mediaPlayer = new MediaPlayer();
 
         view.setFocusableInTouchMode(true);
         view.requestFocus();
@@ -112,25 +126,49 @@ public class PlayerFragment extends Fragment {
 
     private void initListWithMood() {
         mMoodDataSource.open();
-        listMood = mMoodDataSource.getMoodList();
-        MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, listMood);
+        mListMood = mMoodDataSource.getMoodList();
+        MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, mListMood);
         mListView.setAdapter(moodAdapter);
         mListView.setOnItemClickListener(listenerMood);
     }
 
     private void initListWithSong(long moodId) {
         mSongDataSource.open();
-        listSong = mSongDataSource.getSongListByMoodId(moodId);
-        SongAdapter songAdapter = new SongAdapter(getContext(), R.layout.player_list_item, listSong);
+        mListSong = mSongDataSource.getSongListByMoodId(moodId);
+        SongAdapter songAdapter = new SongAdapter(getContext(), R.layout.player_list_item, mListSong);
         mListView.setAdapter(songAdapter);
         mListView.setOnItemClickListener(listenerSong);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mIntentService == null) {
+            mIntentService = new Intent(getActivity(), MusicService.class);
+            getActivity().bindService(mIntentService, musicConnection, Context.BIND_AUTO_CREATE);
+            getActivity().startService(mIntentService);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().stopService(mIntentService);
+        mMusicService = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().stopService(mIntentService);
+        mMusicService = null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
+            //TODO Load data
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
             PermissionDialog.ConfirmationDialogFragment
                     .newInstance(R.string.read_permission_confirmation,
