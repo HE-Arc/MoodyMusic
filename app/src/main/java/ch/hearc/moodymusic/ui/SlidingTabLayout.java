@@ -1,5 +1,9 @@
 package ch.hearc.moodymusic.ui;
 
+/**
+ * source : https://acadgild.com/blog/sliding-tab-layout-android/
+ */
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.view.PagerAdapter;
@@ -305,4 +309,5 @@ public class SlidingTabLayout extends HorizontalScrollView {
             }
         }
     }
+
 }

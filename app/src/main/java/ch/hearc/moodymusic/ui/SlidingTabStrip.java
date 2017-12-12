@@ -1,5 +1,9 @@
 package ch.hearc.moodymusic.ui;
 
+/**
+ * source : https://acadgild.com/blog/sliding-tab-layout-android/
+ */
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -147,4 +151,3 @@ class SlidingTabStrip extends LinearLayout {
         }
     }
 }
-

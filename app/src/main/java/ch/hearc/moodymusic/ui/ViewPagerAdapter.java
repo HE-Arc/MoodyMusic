@@ -1,4 +1,7 @@
 package ch.hearc.moodymusic.ui;
+/**
+ * Inspired from : https://acadgild.com/blog/sliding-tab-layout-android/
+ */
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,12 +13,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    private CharSequence mTitles[];
+    private CharSequence[] mTitles;
     private int mNumTabs;
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
-    public ViewPagerAdapter(FragmentManager fm, CharSequence mTitles[], int numTabs) {
+    public ViewPagerAdapter(FragmentManager fm, CharSequence[] mTitles, int numTabs) {
         super(fm);
 
         this.mTitles = mTitles;

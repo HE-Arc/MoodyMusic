@@ -1,12 +1,9 @@
 package ch.hearc.moodymusic;
 
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import ch.hearc.moodymusic.ui.SlidingTabLayout;
 import ch.hearc.moodymusic.ui.ViewPagerAdapter;
@@ -21,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPagerAdapter mViewPagerAdapter;
     private SlidingTabLayout mTabs;
     private CharSequence[] mTabTitles;
+    private final int NUM_TABS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,21 +26,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupUi();
-
-        //TODO Used to play a song with the default player, can be deleted in final version
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
     }
 
     private void setupUi() {
-        mTabTitles = new CharSequence[2];
+        mTabTitles = new CharSequence[NUM_TABS];
         mTabTitles[0] = getString(R.string.detect_name);
         mTabTitles[1] = getString(R.string.player_name);
 
         mToolBar = (Toolbar) findViewById(R.id.nav_bar);
         setSupportActionBar(mToolBar);
 
-        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mTabTitles, mTabTitles.length);
+        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mTabTitles, NUM_TABS);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mViewPagerAdapter);
@@ -58,17 +52,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mTabs.setViewPager(mViewPager);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return false;
     }
 
 }
