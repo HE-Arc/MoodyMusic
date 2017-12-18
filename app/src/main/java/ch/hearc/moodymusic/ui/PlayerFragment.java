@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.MediaController.MediaPlayerControl;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import ch.hearc.moodymusic.model.Mood;
 import ch.hearc.moodymusic.model.MoodDataSource;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
+import ch.hearc.moodymusic.player.MusicController;
 import ch.hearc.moodymusic.player.MusicService;
 import ch.hearc.moodymusic.player.MusicService.MusicBinder;
 import ch.hearc.moodymusic.tools.PermissionDialog;
@@ -39,7 +41,7 @@ import ch.hearc.moodymusic.ui.player.SongAdapter;
  * Created by axel.rieben on 29.10.2017.
  */
 
-public class PlayerFragment extends Fragment {
+public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
     public static final String TAG = "PlayerFragment";
 
@@ -72,6 +74,11 @@ public class PlayerFragment extends Fragment {
         }
     };
 
+    //Music player
+    private MusicController controller;
+    private boolean paused = false;
+    private boolean playbackPaused = false;
+
     //UI and listeners
     private ListView mListView;
     private AdapterView.OnItemClickListener listenerMood = new AdapterView.OnItemClickListener() {
@@ -87,11 +94,9 @@ public class PlayerFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mMusicService.setSong(position);
-            mMusicService.playSong();
+            songPicked(position);
         }
     };
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -108,19 +113,7 @@ public class PlayerFragment extends Fragment {
         mSongDataSource = new SongDataSource(getContext());
 
         initListWithMood();
-
-        view.setFocusableInTouchMode(true);
-        view.requestFocus();
-        view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    initListWithMood();
-                }
-                return true;
-            }
-        });
-
+        setControllerView(view);
         return view;
     }
 
@@ -140,6 +133,38 @@ public class PlayerFragment extends Fragment {
         mListView.setOnItemClickListener(listenerSong);
     }
 
+    private void setControllerView(View view) {
+        if(controller == null) {
+            controller = new MusicController(getActivity());
+            controller.setPrevNextListeners(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    playNext();
+                }
+            }, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    playPrev();
+                }
+            });
+            controller.setMediaPlayer(this);
+            controller.setAnchorView(view.findViewById(R.id.list_player));
+            controller.setEnabled(true);
+        }
+
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    initListWithMood();
+                }
+                return true;
+            }
+        });
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -152,9 +177,16 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public void onStop() {
-        super.onStop();
+        controller.hide();
         getActivity().stopService(mIntentService);
         mMusicService = null;
+        super.onStop();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        paused = true;
     }
 
     @Override
@@ -179,6 +211,11 @@ public class PlayerFragment extends Fragment {
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_PERMISSION);
         }
+
+        if (paused) {
+            setControllerView(getView());
+            paused = false;
+        }
     }
 
     @Override
@@ -195,5 +232,102 @@ public class PlayerFragment extends Fragment {
                 }
                 break;
         }
+    }
+
+    public void songPicked(int position) {
+        mMusicService.setSong(position);
+        mMusicService.playSong();
+
+        if (playbackPaused) {
+            setControllerView(getView());
+            playbackPaused = false;
+        }
+        controller.show(0);
+    }
+
+    private void playNext() {
+        mMusicService.playNext();
+        if (playbackPaused) {
+            setControllerView(getView());
+            playbackPaused = false;
+        }
+        controller.show(0);
+    }
+
+    private void playPrev() {
+        mMusicService.playPrev();
+        if (playbackPaused) {
+            setControllerView(getView());
+            playbackPaused = false;
+        }
+        controller.show(0);
+    }
+
+    @Override
+    public void start() {
+        mMusicService.go();
+    }
+
+    @Override
+    public void pause() {
+        playbackPaused = true;
+        mMusicService.pausePlayer();
+    }
+
+    @Override
+    public int getDuration() {
+        if (mMusicService != null && mIsBound && mMusicService.isPng()) {
+            return mMusicService.getDur();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if (mMusicService != null && mIsBound && mMusicService.isPng()) {
+            return mMusicService.getPosn();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public void seekTo(int pos) {
+        mMusicService.seek(pos);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        if (mMusicService != null && mIsBound) {
+            return mMusicService.isPng();
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
     }
 }
