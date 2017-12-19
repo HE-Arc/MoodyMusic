@@ -13,13 +13,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -80,6 +83,8 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     private boolean playbackPaused = false;
 
     //UI and listeners
+    private Toolbar toolbar;
+    private ScrollView mScrollView;
     private ListView mListView;
     private AdapterView.OnItemClickListener listenerMood = new AdapterView.OnItemClickListener() {
 
@@ -98,6 +103,33 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         }
     };
 
+    private View.OnTouchListener listenerScrollView = new View.OnTouchListener() {
+        float y0 = 0;
+        float y1 = 0;
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+
+            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                y0 = motionEvent.getY();
+
+                if (y1 - y0 > 0) {
+                    controller.myHide();
+
+                } else if (y1 - y0 < 0) {
+                    if (!controller.isShowing()) {
+                        controller.show();
+                    }
+                }
+
+                y1 = motionEvent.getY();
+            }
+
+            return false;
+        }
+    };
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_player, container, false);
@@ -107,7 +139,13 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 //        ClassificationTask classificationTask = new ClassificationTask(getContext());
 //        classificationTask.execute();
 
+//        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
+//        mScrollView = (ScrollView) view.findViewById(R.id.scroll_player);
+//        mScrollView.setOnTouchListener(listenerScrollView);
+
         mListView = (ListView) view.findViewById(R.id.list_player);
+        mListView.setOnTouchListener(listenerScrollView);
 
         mMoodDataSource = new MoodDataSource(getContext());
         mSongDataSource = new SongDataSource(getContext());
