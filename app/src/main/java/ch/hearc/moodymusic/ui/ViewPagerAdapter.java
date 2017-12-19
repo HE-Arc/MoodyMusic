@@ -16,6 +16,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private CharSequence[] mTitles;
     private int mNumTabs;
 
+    private DetectFragment mTabDetect;
+    private PlayerFragment mTabPlayer;
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public ViewPagerAdapter(FragmentManager fm, CharSequence[] mTitles, int numTabs) {
@@ -29,11 +31,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            DetectFragment tabDetect = new DetectFragment();
-            return tabDetect;
+            mTabDetect = new DetectFragment();
+            return mTabDetect;
         } else {
-            PlayerFragment tabPlayer = new PlayerFragment();
-            return tabPlayer;
+            mTabPlayer = new PlayerFragment();
+            return mTabPlayer;
         }
     }
 
@@ -47,5 +49,10 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return mNumTabs;
+    }
+
+    public PlayerFragment getPlayerFragment()
+    {
+        return mTabPlayer;
     }
 }
