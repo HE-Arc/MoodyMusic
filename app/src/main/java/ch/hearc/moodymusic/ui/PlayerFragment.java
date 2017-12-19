@@ -112,8 +112,21 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         mMoodDataSource = new MoodDataSource(getContext());
         mSongDataSource = new SongDataSource(getContext());
 
-        initListWithMood();
         setControllerView(view);
+
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    initListWithMood();
+                }
+                return true;
+            }
+        });
+
+        initListWithMood();
         return view;
     }
 
@@ -134,7 +147,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     }
 
     private void setControllerView(View view) {
-        if(controller == null) {
+        if (controller == null) {
             controller = new MusicController(getActivity());
             controller.setPrevNextListeners(new View.OnClickListener() {
                 @Override
@@ -151,18 +164,6 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
             controller.setAnchorView(view.findViewById(R.id.list_player));
             controller.setEnabled(true);
         }
-
-        view.setFocusableInTouchMode(true);
-        view.requestFocus();
-        view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    initListWithMood();
-                }
-                return true;
-            }
-        });
     }
 
     @Override
@@ -177,7 +178,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
     @Override
     public void onStop() {
-        controller.hide();
+        controller.myHide();
         getActivity().stopService(mIntentService);
         mMusicService = null;
         super.onStop();
@@ -242,6 +243,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
             setControllerView(getView());
             playbackPaused = false;
         }
+
         controller.show(0);
     }
 

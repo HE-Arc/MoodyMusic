@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tab_player"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -11,33 +12,28 @@
         android:layout_alignParentTop="true"
         android:fillViewport="true">
 
-        <LinearLayout
+        <ListView
+            android:id="@+id/list_player"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ListView
-                android:id="@+id/list_player"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
     </ScrollView>
 
-    <!--<android.support.v7.widget.CardView-->
-        <!--android:id="@+id/controls_container"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--app:cardElevation="8dp">-->
 
-        <!--<fragment android:name="ch.hearc.moodymusic.ui.player.MiniPlayerFragment"-->
-            <!--android:id="@+id/fragment_playback_controls"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--tools:layout="@layout/fragment_mini_player" />-->
+    <!--<android.support.v7.widget.CardView-->
+    <!--android:id="@+id/controls_container"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--app:cardElevation="8dp">-->
+
+    <!--<fragment android:name="ch.hearc.moodymusic.ui.player.MiniPlayerFragment"-->
+    <!--android:id="@+id/fragment_playback_controls"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--tools:layout="@layout/fragment_mini_player" />-->
 
     <!--</android.support.v7.widget.CardView>-->
 
