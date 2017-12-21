@@ -29,4 +29,41 @@
 
     <!-- Player -->
 
+
+    <!-- Moods -->
+    <string name="happy">happy</string>
+    <string name="sad">sad</string>
+    <string name="angry">angry</string>
+    <string name="surprised">surprised</string>
+    <string name="disgusted">disgusted</string>
+    <string name="scared">scared</string>
+    <string name="neutral">neutral</string>
+
+    <!-- Gracenote Moods -->
+    <string name="Peaceful">Peaceful</string>
+    <string name="Romantic">Romantic</string>
+    <string name="Sentimental">Sentimental</string>
+    <string name="Tender">Tender</string>
+    <string name="Easygoing">Easygoing</string>
+    <string name="Yearning">Yearning</string>
+    <string name="Sophisticated">Sophisticated</string>
+    <string name="Sensual">Sensual</string>
+    <string name="Cool">Cool</string>
+    <string name="Gritty">Gritty</string>
+    <string name="Somber">Somber</string>
+    <string name="Melancholy">Melancholy</string>
+    <string name="Serious">Serious</string>
+    <string name="Brooding">Brooding</string>
+    <string name="Fiery">Fiery</string>
+    <string name="Urgent">Urgent</string>
+    <string name="Defiant">Defiant</string>
+    <string name="Aggressive">Aggressive</string>
+    <string name="Rowdy">Rowdy</string>
+    <string name="Excited">Excited</string>
+    <string name="Energizing">Energizing</string>
+    <string name="Empowering">Empowering</string>
+    <string name="Stirring">Stirring</string>
+    <string name="Lively">Lively</string>
+    <string name="Upbeat">Upbeat</string>
+    <string name="Other">Other</string>
 </resources>

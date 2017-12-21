@@ -161,7 +161,7 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
 
     private void showDialogMood(String mood) {
         if (mood != null) {
-            alertDialog.setTitle("Mood Detection");
+            alertDialog.setTitle("MoodEnum Detection");
             alertDialog.setMessage("You seem to be " + mood + " !\n\n" + "Would you like to play some music that fit your current mood ?");
 
             alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",

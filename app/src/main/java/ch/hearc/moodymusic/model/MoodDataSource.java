@@ -47,7 +47,7 @@ public class MoodDataSource extends DataSource {
 
     public void deleteMood(Mood mood) {
         long id = mood.getId();
-        System.out.println("Mood deleted with id: " + id);
+        System.out.println("MoodEnum deleted with id: " + id);
         mDatabase.delete(DatabaseHandler.TABLE_MOOD, DatabaseHandler.TABLE_MOOD + " = " + id, null);
     }
 
@@ -93,7 +93,7 @@ public class MoodDataSource extends DataSource {
 
         cursor.moveToFirst();
 
-        Log.w(TAG, "Table Mood");
+        Log.w(TAG, "Table MoodEnum");
         while (!cursor.isAfterLast()) {
             Mood mood = cursorToMood(cursor);
             Log.w(TAG, "Id : " + mood.getId() + " Name : " + mood.getName());
