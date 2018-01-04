@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 /**
  * Created by axel.rieben on 21.11.2017.
  */
@@ -47,8 +45,7 @@ public class MoodDataSource extends DataSource {
 
     public void deleteMood(Mood mood) {
         long id = mood.getId();
-        System.out.println("MoodEnum deleted with id: " + id);
-        mDatabase.delete(DatabaseHandler.TABLE_MOOD, DatabaseHandler.TABLE_MOOD + " = " + id, null);
+        mDatabase.delete(DatabaseHandler.TABLE_MOOD, DatabaseHandler.MOOD_ID + " = " + id, null);
     }
 
     public long getMoodId(String name) {
@@ -62,20 +59,6 @@ public class MoodDataSource extends DataSource {
 
         cursor.close();
         return id;
-    }
-
-    public ArrayList<Mood> getMoodList() {
-        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD, mAllColumns, null,
-                null, null, null, null);
-        ArrayList<Mood> listMood = new ArrayList<Mood>();
-
-        while (cursor.moveToNext()) {
-            Mood mood = cursorToMood(cursor);
-            listMood.add(mood);
-        }
-
-        cursor.close();
-        return listMood;
     }
 
     public int numMood() {
@@ -93,7 +76,7 @@ public class MoodDataSource extends DataSource {
 
         cursor.moveToFirst();
 
-        Log.w(TAG, "Table MoodEnum");
+        Log.w(TAG, "Table Mood");
         while (!cursor.isAfterLast()) {
             Mood mood = cursorToMood(cursor);
             Log.w(TAG, "Id : " + mood.getId() + " Name : " + mood.getName());

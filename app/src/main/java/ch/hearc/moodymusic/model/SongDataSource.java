@@ -16,7 +16,7 @@ public class SongDataSource extends DataSource {
 
     private String[] mAllColumns = {DatabaseHandler.SONG_ID, DatabaseHandler.SONG_PATH, DatabaseHandler.SONG_ARTIST,
             DatabaseHandler.SONG_TITLE, DatabaseHandler.SONG_ALBUM,
-            DatabaseHandler.SONG_MOOD_ID, DatabaseHandler.SONG_USER_MOOD_ID};
+            DatabaseHandler.SONG_MOOD_PLAYLIST_ID, DatabaseHandler.SONG_USER_MOOD_PLAYLIST_ID};
 
     public SongDataSource(Context context) {
         super(context);
@@ -28,8 +28,8 @@ public class SongDataSource extends DataSource {
         values.put(DatabaseHandler.SONG_ARTIST, artist);
         values.put(DatabaseHandler.SONG_TITLE, title);
         values.put(DatabaseHandler.SONG_ALBUM, album);
-        values.put(DatabaseHandler.SONG_MOOD_ID, moodId);
-        values.put(DatabaseHandler.SONG_USER_MOOD_ID, userMoodId);
+        values.put(DatabaseHandler.SONG_MOOD_PLAYLIST_ID, moodId);
+        values.put(DatabaseHandler.SONG_USER_MOOD_PLAYLIST_ID, userMoodId);
         long insertId = mDatabase.insert(DatabaseHandler.TABLE_SONG, null, values);
 
         Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_ID + " = " + insertId,
@@ -49,12 +49,12 @@ public class SongDataSource extends DataSource {
 
     public void updateMood(long songId, long moodId) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHandler.SONG_MOOD_ID, moodId);
+        values.put(DatabaseHandler.SONG_MOOD_PLAYLIST_ID, moodId);
         mDatabase.update(DatabaseHandler.TABLE_SONG, values, DatabaseHandler.SONG_ID + " = " + songId, null);
     }
 
     public Song[] getSongWithNullMood(int limit) {
-        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_ID + " IS NULL",
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_PLAYLIST_ID + " IS NULL",
                 null, null, null, null, Integer.toString(limit));
 
         Song[] arraySong = new Song[cursor.getCount()];
@@ -72,7 +72,7 @@ public class SongDataSource extends DataSource {
     }
 
     public ArrayList<Song> getSongListByMoodId(long moodId) {
-        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_ID + " = ?",
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_PLAYLIST_ID + " = ?",
                 new String[]{Long.toString(moodId)}, null, null, null);
         ArrayList<Song> listSong = new ArrayList<Song>();
 
@@ -107,7 +107,7 @@ public class SongDataSource extends DataSource {
         Log.w(TAG, "Table Song");
         while (!cursor.isAfterLast()) {
             Song song = cursorToSong(cursor);
-            Log.w(TAG, "Id : " + song.getId() + " Path : " + song.getPath() + " Artist : " + song.getArtist() + " Title : " + song.getTitle() + " MoodId : " + song.getMoodId());
+            Log.w(TAG, "Id : " + song.getId() + " Path : " + song.getPath() + " Artist : " + song.getArtist() + " Title : " + song.getTitle() + " MoodId : " + song.getMoodPlaylistId());
             cursor.moveToNext();
         }
         cursor.close();

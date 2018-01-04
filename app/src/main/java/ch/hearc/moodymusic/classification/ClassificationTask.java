@@ -7,7 +7,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import ch.hearc.moodymusic.model.MoodDataSource;
+import ch.hearc.moodymusic.model.MoodPlaylistDataSource;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
 import radams.gracenote.webapi.GracenoteException;
@@ -31,12 +31,12 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
     private String mError;
     private Context mContext;
     private SongDataSource mSongDataSource;
-    private MoodDataSource mMoodDataSource;
+    private MoodPlaylistDataSource mMoodPlaylistDataSource;
 
     public ClassificationTask(Context context) {
         mProgressDialog = new ProgressDialog(context);
         mSongDataSource = new SongDataSource(context);
-        mMoodDataSource = new MoodDataSource(context);
+        mMoodPlaylistDataSource = new MoodPlaylistDataSource(context);
         this.mContext = context;
     }
 
@@ -51,7 +51,7 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
         mError = "";
 
         mSongDataSource.open();
-        mMoodDataSource.open();
+        mMoodPlaylistDataSource.open();
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
 
     private void updateMoodFromSong(Song song, String mood) {
         Log.w(TAG, "Inserting mood : " + mood);
-        long moodId = mMoodDataSource.getOrCreate(mood);
+        long moodId = mMoodPlaylistDataSource.getOrCreate(mood);
         mSongDataSource.updateMood(song.getId(), moodId);
         Log.w(TAG, "Inserted !");
     }

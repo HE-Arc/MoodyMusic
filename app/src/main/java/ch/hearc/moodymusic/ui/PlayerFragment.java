@@ -23,15 +23,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.MediaController.MediaPlayerControl;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.classification.ClassificationEngine;
-import ch.hearc.moodymusic.model.Mood;
-import ch.hearc.moodymusic.model.MoodDataSource;
+import ch.hearc.moodymusic.model.MoodPlaylist;
+import ch.hearc.moodymusic.model.MoodPlaylistDataSource;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
 import ch.hearc.moodymusic.player.MusicController;
@@ -53,9 +52,9 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     private static final String FRAGMENT_DIALOG = "dialog";
 
     //Data
-    private MoodDataSource mMoodDataSource;
+    private MoodPlaylistDataSource mMoodPlaylistDataSource;
     private SongDataSource mSongDataSource;
-    private ArrayList<Mood> mListMood;
+    private ArrayList<MoodPlaylist> mListMoodPlaylist;
     private ArrayList<Song> mListSong;
 
     //Music service
@@ -85,13 +84,12 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
     //UI and listeners
     private Toolbar toolbar;
-    private ScrollView mScrollView;
     private ListView mListView;
     private AdapterView.OnItemClickListener listenerMood = new AdapterView.OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            initListWithSong(mListMood.get(position).getId());
+            initListWithSong(mListMoodPlaylist.get(position).getId());
             mMusicService.setList(mListSong);
         }
     };
@@ -148,7 +146,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         mListView = (ListView) view.findViewById(R.id.list_player);
         mListView.setOnTouchListener(listenerScrollView);
 
-        mMoodDataSource = new MoodDataSource(getContext());
+        mMoodPlaylistDataSource = new MoodPlaylistDataSource(getContext());
         mSongDataSource = new SongDataSource(getContext());
 
         setControllerView(view);
@@ -333,9 +331,9 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     }
 
     private void initListWithMood() {
-        mMoodDataSource.open();
-        mListMood = mMoodDataSource.getMoodList();
-        MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, mListMood);
+        mMoodPlaylistDataSource.open();
+        mListMoodPlaylist = mMoodPlaylistDataSource.getMoodPlaylistList();
+        MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, mListMoodPlaylist);
         mListView.setAdapter(moodAdapter);
         mListView.setOnItemClickListener(listenerMood);
     }

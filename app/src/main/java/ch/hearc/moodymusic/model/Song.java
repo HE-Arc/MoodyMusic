@@ -10,17 +10,17 @@ public class Song {
     private String artist;
     private String title;
     private String album;
-    private long moodId;
-    private long userMoodId;
+    private long moodPlaylistId;
+    private long userMoodPlaylistId;
 
-    public Song(long id, String path, String artist, String title, String album, long moodId, long userMoodId) {
+    public Song(long id, String path, String artist, String title, String album, long moodPlaylistId, long userMoodPlaylistId) {
         this.id = id;
         this.path = path;
         this.artist = artist;
         this.title = title;
         this.album = album;
-        this.moodId = moodId;
-        this.userMoodId = userMoodId;
+        this.moodPlaylistId = moodPlaylistId;
+        this.userMoodPlaylistId = userMoodPlaylistId;
     }
 
     //Getter
@@ -44,12 +44,12 @@ public class Song {
         return album;
     }
 
-    public long getMoodId() {
-        return moodId;
+    public long getMoodPlaylistId() {
+        return moodPlaylistId;
     }
 
-    public long getUserMoodId() {
-        return userMoodId;
+    public long getUserMoodPlaylistId() {
+        return userMoodPlaylistId;
     }
 
     //Setter
@@ -73,11 +73,11 @@ public class Song {
         this.album = album;
     }
 
-    public void setMoodId(long moodId) {
-        this.moodId = moodId;
+    public void setMoodPlaylistId(long moodPlaylistId) {
+        this.moodPlaylistId = moodPlaylistId;
     }
 
-    public void setUserMoodId(long userMoodId) {
-        this.userMoodId = userMoodId;
+    public void setUserMoodPlaylistId(long userMoodPlaylistId) {
+        this.userMoodPlaylistId = userMoodPlaylistId;
     }
 }

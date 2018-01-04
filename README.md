@@ -1,2 +1,2 @@
 # MoodyMusic
-Android app that recommends music based on a mood
+Android app that recommends music based on a moodPlaylist
