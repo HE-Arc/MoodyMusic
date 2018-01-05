@@ -47,7 +47,7 @@ public class ClassificationEngine {
 
                     //Query a specific folder ?
                     String pathTest = "/storage/0C04-3890/Test/*";
-                    Log.w(TAG, "Path : " + pathTest);
+                    //Log.w(TAG, "Path : " + pathTest);
 //            Uri uri = android.provider.MediaStore.Audio.Media.getContentUriForPath(path);
 
                     cursor = mContext.getContentResolver().query(uri, projection, selection, new String[]{}, null);
@@ -57,11 +57,11 @@ public class ClassificationEngine {
                         cursor.moveToFirst();
 
                         while (!cursor.isAfterLast()) {
-                            Log.w(TAG, cursor.getString(0) + " "
-                                    + cursor.getString(1) + " "
-                                    + cursor.getString(2) + " "
-                                    + cursor.getString(3) + " "
-                                    + cursor.getString(4));
+//                            Log.w(TAG, cursor.getString(0) + " "
+//                                    + cursor.getString(1) + " "
+//                                    + cursor.getString(2) + " "
+//                                    + cursor.getString(3) + " "
+//                                    + cursor.getString(4));
 
                             if (Integer.parseInt(cursor.getString(4)) > minDuration) {
 

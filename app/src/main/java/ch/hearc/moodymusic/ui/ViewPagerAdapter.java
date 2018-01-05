@@ -25,16 +25,18 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         this.mTitles = mTitles;
         this.mNumTabs = numTabs;
+
+        mTabPlayer = new PlayerFragment();
+        mTabDetect = new DetectFragment();
+        mTabDetect.setPlayerFragment(mTabPlayer);
     }
 
     //This method return the fragment for the every position in the View Pager
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            mTabDetect = new DetectFragment();
             return mTabDetect;
         } else {
-            mTabPlayer = new PlayerFragment();
             return mTabPlayer;
         }
     }

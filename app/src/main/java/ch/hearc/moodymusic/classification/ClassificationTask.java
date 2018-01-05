@@ -67,7 +67,7 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
             System.out.println("UserID = " + userID);
             GracenoteMetadata results;
 
-            Song[] newSongs = mSongDataSource.getSongWithNullMood(10);
+            Song[] newSongs = mSongDataSource.getSongWithNullMood(100);
 
             for (int i = 0; i < newSongs.length; i++) {
                 long songId = newSongs[i].getId();
@@ -106,10 +106,9 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
     }
 
     private void updateMoodFromSong(Song song, String mood) {
-        Log.w(TAG, "Inserting mood : " + mood);
-        long moodId = mMoodPlaylistDataSource.getOrCreate(mood);
+        Log.w(TAG, "Inserting song : " + song + " mood : " + mood);
+        long moodId = mMoodPlaylistDataSource.getMoodPlaylistId(mood);
         mSongDataSource.updateMood(song.getId(), moodId);
-        Log.w(TAG, "Inserted !");
     }
 
     private String removeSpecialCharacters(String input) {

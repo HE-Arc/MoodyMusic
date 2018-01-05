@@ -87,6 +87,7 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
     private CameraView mCameraView;
     private Handler mBackgroundHandler;
 
+    //Listener
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -105,6 +106,9 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
             }
         }
     };
+
+    //Mapping
+    private PlayerFragment playerFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -274,6 +278,10 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
 //        }
 //    }
 
+    public void setPlayerFragment(PlayerFragment playerFragment){
+        this.playerFragment = playerFragment;
+    }
+
     private CameraView.Callback mCallback = new CameraView.Callback() {
 
         @Override
@@ -315,8 +323,9 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
                         }
                     }
 
-                    DetectionRequester detectionRequester = new DetectionRequester(getContext());
+                    DetectionRequester detectionRequester = new DetectionRequester(getContext(), playerFragment);
                     detectionRequester.execute(file.getPath());
+
                     mFabTakePicture.setEnabled(true);
                 }
             });

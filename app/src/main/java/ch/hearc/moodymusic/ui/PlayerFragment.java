@@ -1,11 +1,14 @@
 package ch.hearc.moodymusic.ui;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -13,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -29,6 +31,9 @@ import java.util.ArrayList;
 
 import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.classification.ClassificationEngine;
+import ch.hearc.moodymusic.classification.ClassificationTask;
+import ch.hearc.moodymusic.model.MappingDataSource;
+import ch.hearc.moodymusic.model.MoodDataSource;
 import ch.hearc.moodymusic.model.MoodPlaylist;
 import ch.hearc.moodymusic.model.MoodPlaylistDataSource;
 import ch.hearc.moodymusic.model.Song;
@@ -54,6 +59,8 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     //Data
     private MoodPlaylistDataSource mMoodPlaylistDataSource;
     private SongDataSource mSongDataSource;
+    private MoodDataSource mMoodDataSource;
+    private MappingDataSource mMappingDataSource;
     private ArrayList<MoodPlaylist> mListMoodPlaylist;
     private ArrayList<Song> mListSong;
 
@@ -83,7 +90,6 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     private boolean playbackPaused = false;
 
     //UI and listeners
-    private Toolbar toolbar;
     private ListView mListView;
     private AdapterView.OnItemClickListener listenerMood = new AdapterView.OnItemClickListener() {
 
@@ -134,20 +140,32 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         View view = inflater.inflate(R.layout.tab_player, container, false);
 
         ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
-//        classificationEngine.initializeDatabaseWithSongs(0);
-//        ClassificationTask classificationTask = new ClassificationTask(getContext());
-//        classificationTask.execute();
-
-//        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-
-//        mScrollView = (ScrollView) view.findViewById(R.id.scroll_player);
-//        mScrollView.setOnTouchListener(listenerScrollView);
+        classificationEngine.initializeDatabaseWithSongs(0);
+        ClassificationTask classificationTask = new ClassificationTask(getContext());
+        classificationTask.execute();
 
         mListView = (ListView) view.findViewById(R.id.list_player);
         mListView.setOnTouchListener(listenerScrollView);
 
         mMoodPlaylistDataSource = new MoodPlaylistDataSource(getContext());
         mSongDataSource = new SongDataSource(getContext());
+        mMoodDataSource = new MoodDataSource(getContext());
+        mMappingDataSource = new MappingDataSource(getContext());
+
+        mMoodPlaylistDataSource.open();
+        mSongDataSource.open();
+        mMoodDataSource.open();
+        mMappingDataSource.open();
+
+        mMoodDataSource.showTable();
+        mSongDataSource.showTable();
+        mMoodPlaylistDataSource.showTable();
+        mMappingDataSource.showTable();
+
+        mMoodPlaylistDataSource.close();
+        mSongDataSource.close();
+        mMoodDataSource.close();
+        mMappingDataSource.close();
 
         setControllerView(view);
 
@@ -165,6 +183,51 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
         initListWithMood();
         return view;
+    }
+
+    public void launchPlaylist(String mood) {
+        mMoodDataSource.open();
+        mMappingDataSource.open();
+
+        long moodId = mMoodDataSource.getMoodId(mood);
+        long moodPlaylistId = mMappingDataSource.map(moodId);
+
+        mMoodDataSource.close();
+        mMappingDataSource.close();
+
+        initListWithMood();
+        int position = (int) moodPlaylistId;
+        mListView.performItemClick(mListView.getAdapter().getView(position, null, null), position, mListView.getAdapter().getItemId(position));
+
+        if (!mListView.getAdapter().isEmpty()) {
+            mListView.performItemClick(mListView.getAdapter().getView(0, null, null), 0, mListView.getAdapter().getItemId(0));
+        } else {
+            initListWithMood();
+            dialogError();
+        }
+    }
+
+    private void dialogError() {
+        AlertDialog alertDialog;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            alertDialog = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog).create();
+        } else {
+            alertDialog = new AlertDialog.Builder(getContext()).create();
+        }
+
+        alertDialog.setTitle("Oops");
+        alertDialog.setMessage("You have no songs in this playlist, try to refresh the playlists or add new songs on your phone");
+        alertDialog.setCancelable(false);
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        alertDialog.show();
     }
 
     public void hideController() {
@@ -336,6 +399,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, mListMoodPlaylist);
         mListView.setAdapter(moodAdapter);
         mListView.setOnItemClickListener(listenerMood);
+        mMoodPlaylistDataSource.close();
     }
 
     private void initListWithSong(long moodId) {
@@ -344,6 +408,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         SongAdapter songAdapter = new SongAdapter(getContext(), R.layout.player_list_item, mListSong);
         mListView.setAdapter(songAdapter);
         mListView.setOnItemClickListener(listenerSong);
+        mSongDataSource.close();
     }
 
     private void setControllerView(View view) {

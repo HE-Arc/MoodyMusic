@@ -20,42 +20,12 @@ public class MoodMusicMapper {
     //Data
     private MoodPlaylistDataSource mMoodPlaylistDataSource;
 
-    private String[] playListMood = new String[]
-            {
-                    "Peaceful",
-                    "Romantic",
-                    "Sentimental",
-                    "Tender",
-                    "Easygoing",
-                    "Yearning",
-                    "Sophisticated",
-                    "Sensual",
-                    "Cool",
-                    "Gritty",
-                    "Somber",
-                    "Melancholy",
-                    "Serious",
-                    "Brooding",
-                    "Fiery",
-                    "Urgent",
-                    "Defiant",
-                    "Aggressive",
-                    "Rowdy",
-                    "Excited",
-                    "Energizing",
-                    "Empowering",
-                    "Stirring",
-                    "Lively",
-                    "Upbeat",
-                    "Other"
-            };
-
     public MoodMusicMapper(Context context) {
         mapping = new HashMap<>(7);
         mMoodPlaylistDataSource = new MoodPlaylistDataSource(context);
     }
 
-    private void createMapping() {
+    private void map(String mood) {
         mMoodPlaylistDataSource.open();
         ArrayList<MoodPlaylist> listMoodPlaylist = mMoodPlaylistDataSource.getMoodPlaylistList();
 

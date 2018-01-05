@@ -28,6 +28,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 
+import ch.hearc.moodymusic.ui.PlayerFragment;
+
 import static ch.hearc.moodymusic.tools.Constants.SKY_API_KEY;
 import static ch.hearc.moodymusic.tools.Constants.SKY_API_SEC;
 
@@ -43,10 +45,12 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
     private AlertDialog alertDialog;
     private String error;
     private Context context;
+    private PlayerFragment playerFragment;
 
-    public DetectionRequester(Context context) {
+    public DetectionRequester(Context context, PlayerFragment playerFragment) {
         progressDialog = new ProgressDialog(context);
         this.context = context;
+        this.playerFragment = playerFragment;
     }
 
     @Override
@@ -159,15 +163,16 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
         showDialogMood(result);
     }
 
-    private void showDialogMood(String mood) {
+    private void showDialogMood(final String mood) {
         if (mood != null) {
-            alertDialog.setTitle("MoodEnum Detection");
+            alertDialog.setTitle("Mood Detection");
             alertDialog.setMessage("You seem to be " + mood + " !\n\n" + "Would you like to play some music that fit your current mood ?");
+            alertDialog.setCancelable(false);
 
             alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-
+                            playerFragment.launchPlaylist(mood);
                         }
                     });
 

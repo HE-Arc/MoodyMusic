@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.model.MoodPlaylist;
+import ch.hearc.moodymusic.model.SongDataSource;
 
 /**
  * Created by axel.rieben on 02.12.2017.
@@ -20,11 +21,14 @@ public class MoodAdapter extends ArrayAdapter<MoodPlaylist> {
 
     private ArrayList<MoodPlaylist> mListMoodPlaylist;
     private Context mContext;
+    private SongDataSource mSongDataSource;
 
     public MoodAdapter(Context context, int textViewResourceId, ArrayList<MoodPlaylist> listMoodPlaylist) {
         super(context, textViewResourceId, listMoodPlaylist);
         mContext = context;
         mListMoodPlaylist = listMoodPlaylist;
+
+        mSongDataSource = new SongDataSource(context);
     }
 
     @Override
@@ -35,11 +39,19 @@ public class MoodAdapter extends ArrayAdapter<MoodPlaylist> {
             view = inflater.inflate(R.layout.player_list_item, null);
         }
 
+        mSongDataSource.open();
+        int numSong = mSongDataSource.numSongInPlaylist(mListMoodPlaylist.get(position).getId());
+        mSongDataSource.close();
+
         TextView textTop = (TextView) view.findViewById(R.id.text_top);
         textTop.setText(mListMoodPlaylist.get(position).getName());
 
         TextView textBottom = (TextView) view.findViewById(R.id.text_bottom);
-        textBottom.setText("Playlist");
+        textBottom.setText(numSong + " Songs");
+
+        if(numSong == 0) {
+            view.setEnabled(false);
+        }
 
         return view;
     }

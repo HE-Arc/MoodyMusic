@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import java.util.Random;
+
 /**
  * Created by axel.rieben on 21.11.2017.
  */
@@ -48,8 +50,25 @@ public class MappingDataSource extends DataSource {
         return count;
     }
 
+    public long map(long moodId){
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MAPPING, mAllColumns, DatabaseHandler.MAPPING_MOOD_ID + " = " + moodId,
+                null, null, null, null);
+
+        Random random = new Random();
+        int count = cursor.getCount();
+        int randMoodPlaylist = random.nextInt(count);
+        long moodPlaylistId = 0;
+
+        if (cursor.move(randMoodPlaylist)) {
+            moodPlaylistId = cursor.getLong(2);
+        }
+
+        cursor.close();
+        return moodPlaylistId;
+    }
+
     public void showTable() {
-        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD, mAllColumns, null,
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MAPPING, mAllColumns, null,
                 null, null, null, null, null);
 
         cursor.moveToFirst();

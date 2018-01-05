@@ -94,6 +94,15 @@ public class SongDataSource extends DataSource {
         return count;
     }
 
+    public int numSongInPlaylist(long moodPlaylistId) {
+        Cursor cursor = mDatabase.rawQuery("SELECT count(*) FROM " + DatabaseHandler.TABLE_SONG + " WHERE " + DatabaseHandler.SONG_MOOD_PLAYLIST_ID + " = " + moodPlaylistId, null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+
+        return count;
+    }
+
     public void clearSongs() {
         mDatabase.execSQL("DELETE FROM " + DatabaseHandler.TABLE_SONG);
     }
