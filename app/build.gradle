@@ -37,6 +37,7 @@ dependencies {
     compile 'com.github.google:cameraview:3eaeac09a7'
     compile 'com.android.support:design:26.+'
     compile 'com.github.SkyBiometry:face4j:face4j-1.6.2'
-    compile 'com.github.AxelRieben:java-gracenote:master-SNAPSHOT'
+    compile 'com.github.AxelRieben:java-gracenote:871356a'
+
 }
 

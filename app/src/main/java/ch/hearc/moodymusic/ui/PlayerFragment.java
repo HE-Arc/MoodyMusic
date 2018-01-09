@@ -30,7 +30,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import ch.hearc.moodymusic.R;
-import ch.hearc.moodymusic.classification.ClassificationEngine;
 import ch.hearc.moodymusic.classification.ClassificationTask;
 import ch.hearc.moodymusic.model.MappingDataSource;
 import ch.hearc.moodymusic.model.MoodDataSource;
@@ -139,8 +138,8 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_player, container, false);
 
-        ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
-        classificationEngine.initializeDatabaseWithSongs(0);
+//        ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
+//        classificationEngine.initializeDatabaseWithSongs(0);
         ClassificationTask classificationTask = new ClassificationTask(getContext());
         classificationTask.execute();
 

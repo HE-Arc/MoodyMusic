@@ -71,8 +71,6 @@ public class ClassificationEngine {
                             cursor.moveToNext();
                             i++;
                         }
-
-                        Log.w(TAG, "Number of music : " + i);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

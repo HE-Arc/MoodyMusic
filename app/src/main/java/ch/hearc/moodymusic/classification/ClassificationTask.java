@@ -64,10 +64,9 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
 
             GracenoteWebAPI api = new GracenoteWebAPI(GRACE_CLIENT_ID, GRACE_CLIENT_TAG, GRACE_USER_ID);
             String userID = api.register();
-            System.out.println("UserID = " + userID);
             GracenoteMetadata results;
 
-            Song[] newSongs = mSongDataSource.getSongWithNullMood(100);
+            Song[] newSongs = mSongDataSource.getSongWithNullMood(50);
 
             for (int i = 0; i < newSongs.length; i++) {
                 long songId = newSongs[i].getId();
@@ -77,22 +76,30 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
 
                 if (!artist.isEmpty() && !title.isEmpty()) {
                     results = api.searchTrack(artist, "", title);
-                    ArrayList<GracenoteMetadataOET> moods = (ArrayList<GracenoteMetadataOET>) results.getAlbumData(0, "mood");
 
-                    switch (moods.size()) {
-                        case 0:
-                            Log.w(TAG, title + " no mood ");
-                            break;
-                        case 1:
-                            Log.w(TAG, title + " one mood : " + moods.get(0).getText());
-                            updateMoodFromSong(newSongs[i], moods.get(0).getText());
-                            break;
-                        case 2:
-                            Log.w(TAG, title + " " + " two mood : " + moods.get(0).getText() + " " + moods.get(1).getText());
-                            updateMoodFromSong(newSongs[i], moods.get(0).getText());
-                            break;
-                        default:
-                            Log.w(TAG, title + " error");
+                    if(results != null) {
+                        ArrayList<GracenoteMetadataOET> moods = (ArrayList<GracenoteMetadataOET>) results.getAlbumData(0, "mood");
+
+                        switch (moods.size()) {
+                            case 0:
+                                Log.w(TAG, title + " no mood ");
+                                break;
+                            case 1:
+                                Log.w(TAG, title + " one mood : " + moods.get(0).getText());
+                                updateMoodFromSong(newSongs[i], moods.get(0).getText());
+                                break;
+                            case 2:
+                                Log.w(TAG, title + " " + " two mood : " + moods.get(0).getText() + " " + moods.get(1).getText());
+                                updateMoodFromSong(newSongs[i], moods.get(0).getText());
+                                break;
+                            default:
+                                Log.w(TAG, title + " error");
+                                setOtherMoodSong(newSongs[i]);
+                        }
+                    }
+                    else
+                    {
+                        setOtherMoodSong(newSongs[i]);
                     }
                 }
             }
@@ -106,8 +113,14 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
     }
 
     private void updateMoodFromSong(Song song, String mood) {
-        Log.w(TAG, "Inserting song : " + song + " mood : " + mood);
+        Log.w(TAG, "Update song : " + song + " mood : " + mood);
         long moodId = mMoodPlaylistDataSource.getMoodPlaylistId(mood);
+        mSongDataSource.updateMood(song.getId(), moodId);
+    }
+
+    private void setOtherMoodSong(Song song) {
+        Log.w(TAG, "Update song : " + song + " mood : Other");
+        long moodId = mMoodPlaylistDataSource.getMoodPlaylistId("Other");
         mSongDataSource.updateMood(song.getId(), moodId);
     }
 
