@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,6 +35,9 @@ public class SongAdapter extends ArrayAdapter<Song> {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.player_list_item, null);
         }
+
+        ImageView image = (ImageView) view.findViewById(R.id.image_player_item);
+        image.setImageResource(R.drawable.ic_audiotrack);
 
         TextView textTop = (TextView) view.findViewById(R.id.text_top);
         textTop.setText(mListSong.get(position).getTitle());

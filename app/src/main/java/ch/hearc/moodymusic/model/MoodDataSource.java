@@ -49,12 +49,13 @@ public class MoodDataSource extends DataSource {
     }
 
     public long getMoodId(String name) {
-        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD, new String[]{DatabaseHandler.MOOD_ID, DatabaseHandler.MOOD_NAME}, DatabaseHandler.MOOD_NAME + " LIKE ?",
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD, mAllColumns, DatabaseHandler.MOOD_NAME + " LIKE ?",
                 new String[]{name}, null, null, null);
 
         long id = 0;
         if (cursor.moveToFirst()) {
-            id = cursor.getLong(0);
+            Mood mood = cursorToMood(cursor);
+            id = mood.getId();
         }
 
         cursor.close();

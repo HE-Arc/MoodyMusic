@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ public class MoodAdapter extends ArrayAdapter<MoodPlaylist> {
         mSongDataSource.open();
         int numSong = mSongDataSource.numSongInPlaylist(mListMoodPlaylist.get(position).getId());
         mSongDataSource.close();
+
+        ImageView image = (ImageView) view.findViewById(R.id.image_player_item);
+        image.setImageResource(R.drawable.ic_playlist);
 
         TextView textTop = (TextView) view.findViewById(R.id.text_top);
         textTop.setText(mListMoodPlaylist.get(position).getName());

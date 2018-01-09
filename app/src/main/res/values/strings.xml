@@ -27,9 +27,6 @@
     <!-- Connectivity -->
     <string name="no_internet">You need an internet connection to use this functionality</string>
 
-    <!-- Player -->
-
-
     <!-- Moods -->
     <string name="happy">happy</string>
     <string name="sad">sad</string>

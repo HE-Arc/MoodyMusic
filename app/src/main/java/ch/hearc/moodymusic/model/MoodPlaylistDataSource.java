@@ -51,16 +51,32 @@ public class MoodPlaylistDataSource extends DataSource {
     }
 
     public long getMoodPlaylistId(String name) {
-        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD_PLAYLIST, new String[]{DatabaseHandler.MOOD_PLAYLIST_ID, DatabaseHandler.MOOD_PLAYLIST_NAME}, DatabaseHandler.MOOD_PLAYLIST_NAME + " = ?",
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD_PLAYLIST, mAllColumns, DatabaseHandler.MOOD_PLAYLIST_NAME + " = ?",
                 new String[]{name}, null, null, null);
 
         long id = 0;
         if (cursor.moveToFirst()) {
-            id = cursor.getLong(0);
+            MoodPlaylist moodPlaylist = cursorToMoodPlaylist(cursor);
+            id = moodPlaylist.getId();
         }
 
         cursor.close();
         return id;
+    }
+
+    public String getMoodPlaylistName(long id) {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MOOD_PLAYLIST, mAllColumns, DatabaseHandler.MOOD_PLAYLIST_ID + " = " + id,
+                null, null, null, null);
+
+        String name = "";
+
+        if (cursor.moveToFirst()) {
+            MoodPlaylist moodPlaylist = cursorToMoodPlaylist(cursor);
+            name = moodPlaylist.getName();
+        }
+
+        cursor.close();
+        return name;
     }
 
     public ArrayList<MoodPlaylist> getMoodPlaylistList() {

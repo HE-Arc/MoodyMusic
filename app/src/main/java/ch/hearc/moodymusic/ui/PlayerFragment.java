@@ -91,6 +91,8 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
     //UI and listeners
     private ListView mListView;
+    private AlertDialog alertDialog;
+
     private AdapterView.OnItemClickListener listenerMood = new AdapterView.OnItemClickListener() {
 
         @Override
@@ -182,6 +184,13 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         });
 
         initListWithMood();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            alertDialog = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog).create();
+        } else {
+            alertDialog = new AlertDialog.Builder(getContext()).create();
+        }
+
         return view;
     }
 
@@ -202,12 +211,17 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         {
             initListWithMood();
             int randListIndex = random.nextInt(moodPlaylistIds.size());
-            int position = moodPlaylistIds.get(randListIndex).intValue();
+            int position = moodPlaylistIds.get(randListIndex).intValue() -1; //-1 to get the correct position in the listview
             mListView.performItemClick(mListView.getAdapter().getView(position, null, null), position, mListView.getAdapter().getItemId(position));
 
             if (!mListView.getAdapter().isEmpty()) {
                 playlistEmpty = false;
                 mListView.performItemClick(mListView.getAdapter().getView(0, null, null), 0, mListView.getAdapter().getItemId(0));
+
+                mMoodPlaylistDataSource.open();
+                String name = mMoodPlaylistDataSource.getMoodPlaylistName(moodPlaylistIds.get(randListIndex));
+                mMoodPlaylistDataSource.close();
+                dialogPlaylist(name);
             }
             else
             {
@@ -222,18 +236,23 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         }
     }
 
+    private void dialogPlaylist(String name) {
+        alertDialog.setTitle("Playlist launch");
+        alertDialog.setMessage("Playlist " + name + " is currently playing, enjoy !");
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        alertDialog.show();
+    }
+
     private void dialogError() {
-        AlertDialog alertDialog;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            alertDialog = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog).create();
-        } else {
-            alertDialog = new AlertDialog.Builder(getContext()).create();
-        }
-
         alertDialog.setTitle("No match");
         alertDialog.setMessage("You have no songs that fit your current mood, try to add new songs on your phone and refresh the playlists !");
-        alertDialog.setCancelable(false);
 
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
                 new DialogInterface.OnClickListener() {
