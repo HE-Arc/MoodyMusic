@@ -83,6 +83,7 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
                         switch (moods.size()) {
                             case 0:
                                 Log.w(TAG, title + " no mood ");
+                                setOtherMoodSong(newSongs[i]);
                                 break;
                             case 1:
                                 Log.w(TAG, title + " one mood : " + moods.get(0).getText());

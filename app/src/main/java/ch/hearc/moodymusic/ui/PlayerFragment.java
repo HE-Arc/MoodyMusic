@@ -28,9 +28,10 @@ import android.widget.MediaController.MediaPlayerControl;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import ch.hearc.moodymusic.R;
-import ch.hearc.moodymusic.classification.ClassificationTask;
 import ch.hearc.moodymusic.model.MappingDataSource;
 import ch.hearc.moodymusic.model.MoodDataSource;
 import ch.hearc.moodymusic.model.MoodPlaylist;
@@ -140,8 +141,8 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
 //        ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
 //        classificationEngine.initializeDatabaseWithSongs(0);
-        ClassificationTask classificationTask = new ClassificationTask(getContext());
-        classificationTask.execute();
+//        ClassificationTask classificationTask = new ClassificationTask(getContext());
+//        classificationTask.execute();
 
         mListView = (ListView) view.findViewById(R.id.list_player);
         mListView.setOnTouchListener(listenerScrollView);
@@ -189,18 +190,33 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         mMappingDataSource.open();
 
         long moodId = mMoodDataSource.getMoodId(mood);
-        long moodPlaylistId = mMappingDataSource.map(moodId);
+        List<Long> moodPlaylistIds = mMappingDataSource.map(moodId);
 
         mMoodDataSource.close();
         mMappingDataSource.close();
 
-        initListWithMood();
-        int position = (int) moodPlaylistId;
-        mListView.performItemClick(mListView.getAdapter().getView(position, null, null), position, mListView.getAdapter().getItemId(position));
+        Random random = new Random();
+        boolean playlistEmpty = true;
 
-        if (!mListView.getAdapter().isEmpty()) {
-            mListView.performItemClick(mListView.getAdapter().getView(0, null, null), 0, mListView.getAdapter().getItemId(0));
-        } else {
+        while (moodPlaylistIds.size() != 0 && playlistEmpty)
+        {
+            initListWithMood();
+            int randListIndex = random.nextInt(moodPlaylistIds.size());
+            int position = moodPlaylistIds.get(randListIndex).intValue();
+            mListView.performItemClick(mListView.getAdapter().getView(position, null, null), position, mListView.getAdapter().getItemId(position));
+
+            if (!mListView.getAdapter().isEmpty()) {
+                playlistEmpty = false;
+                mListView.performItemClick(mListView.getAdapter().getView(0, null, null), 0, mListView.getAdapter().getItemId(0));
+            }
+            else
+            {
+                moodPlaylistIds.remove(randListIndex);
+            }
+        }
+
+        if(playlistEmpty)
+        {
             initListWithMood();
             dialogError();
         }
@@ -215,8 +231,8 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
             alertDialog = new AlertDialog.Builder(getContext()).create();
         }
 
-        alertDialog.setTitle("Oops");
-        alertDialog.setMessage("You have no songs in this playlist, try to refresh the playlists or add new songs on your phone");
+        alertDialog.setTitle("No match");
+        alertDialog.setMessage("You have no songs that fit your current mood, try to add new songs on your phone and refresh the playlists !");
         alertDialog.setCancelable(false);
 
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
