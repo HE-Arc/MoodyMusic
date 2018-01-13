@@ -31,29 +31,29 @@ public class MusicService extends Service implements
     public static final String TAG = "MusicService";
 
     //Notification
-    private String songTitle;
+    private String mSongTitle;
     private static final int NOTIFY_ID = 1;
 
     //Media player
     private MediaPlayer mMediaPlayer;
     private ArrayList<Song> mlistSongs;
     private int mSongPosition;
-    private AudioManager audioManager;
 
     //Shuffle
-    private boolean shuffle = false;
-    private Random rand;
+    private boolean mShuffle = false;
+    private Random mRandom;
 
     //Binder
-    private final IBinder musicBind = new MusicBinder();
+    private final IBinder mMusicBind = new MusicBinder();
 
     public void onCreate() {
         super.onCreate();
         mSongPosition = 0;
         mMediaPlayer = new MediaPlayer();
+        mlistSongs = new ArrayList<>(0);
 
         initMusicPlayer();
-        rand = new Random();
+        mRandom = new Random();
     }
 
     public void initMusicPlayer() {
@@ -73,17 +73,21 @@ public class MusicService extends Service implements
     }
 
     public void setShuffle() {
-        if (shuffle) {
-            shuffle = false;
+        if (mShuffle) {
+            mShuffle = false;
         } else {
-            shuffle = true;
+            mShuffle = true;
         }
     }
 
     public void playSong() {
+        if(mlistSongs.isEmpty()) {
+            return;
+        }
+
         mMediaPlayer.reset();
         Song playSong = mlistSongs.get(mSongPosition);
-        songTitle = playSong.getTitle();
+        mSongTitle = playSong.getTitle();
         String currSong = playSong.getPath();
 //        Uri trackUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
 
@@ -129,10 +133,10 @@ public class MusicService extends Service implements
     }
 
     public void playNext() {
-        if (shuffle) {
+        if (mShuffle) {
             int newSong = mSongPosition;
             while (newSong == mSongPosition) {
-                newSong = rand.nextInt(mlistSongs.size());
+                newSong = mRandom.nextInt(mlistSongs.size());
             }
             mSongPosition = newSong;
         } else {
@@ -152,7 +156,7 @@ public class MusicService extends Service implements
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return musicBind;
+        return mMusicBind;
     }
 
     @Nullable
@@ -201,10 +205,10 @@ public class MusicService extends Service implements
 
         builder.setContentIntent(pendInt)
                 .setSmallIcon(R.drawable.ic_play)
-                .setTicker(songTitle)
+                .setTicker(mSongTitle)
                 .setOngoing(true)
                 .setContentTitle("Playing")
-                .setContentText(songTitle);
+                .setContentText(mSongTitle);
         Notification not = builder.build();
 
         startForeground(NOTIFY_ID, not);

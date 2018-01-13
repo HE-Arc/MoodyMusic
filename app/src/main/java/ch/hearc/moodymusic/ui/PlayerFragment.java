@@ -191,6 +191,8 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
             alertDialog = new AlertDialog.Builder(getContext()).create();
         }
 
+        initServiceIntent();
+
         return view;
     }
 
@@ -207,11 +209,10 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         Random random = new Random();
         boolean playlistEmpty = true;
 
-        while (moodPlaylistIds.size() != 0 && playlistEmpty)
-        {
+        while (moodPlaylistIds.size() != 0 && playlistEmpty) {
             initListWithMood();
             int randListIndex = random.nextInt(moodPlaylistIds.size());
-            int position = moodPlaylistIds.get(randListIndex).intValue() -1; //-1 to get the correct position in the listview
+            int position = moodPlaylistIds.get(randListIndex).intValue() - 1; //-1 to get the correct position in the listview
             mListView.performItemClick(mListView.getAdapter().getView(position, null, null), position, mListView.getAdapter().getItemId(position));
 
             if (!mListView.getAdapter().isEmpty()) {
@@ -222,46 +223,15 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
                 String name = mMoodPlaylistDataSource.getMoodPlaylistName(moodPlaylistIds.get(randListIndex));
                 mMoodPlaylistDataSource.close();
                 dialogPlaylist(name);
-            }
-            else
-            {
+            } else {
                 moodPlaylistIds.remove(randListIndex);
             }
         }
 
-        if(playlistEmpty)
-        {
+        if (playlistEmpty) {
             initListWithMood();
             dialogError();
         }
-    }
-
-    private void dialogPlaylist(String name) {
-        alertDialog.setTitle("Playlist launch");
-        alertDialog.setMessage("Playlist " + name + " is currently playing, enjoy !");
-
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        alertDialog.show();
-    }
-
-    private void dialogError() {
-        alertDialog.setTitle("No match");
-        alertDialog.setMessage("You have no songs that fit your current mood, try to add new songs on your phone and refresh the playlists !");
-
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        alertDialog.show();
     }
 
     public void hideController() {
@@ -281,11 +251,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     @Override
     public void onStart() {
         super.onStart();
-        if (mIntentService == null) {
-            mIntentService = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(mIntentService, musicConnection, Context.BIND_AUTO_CREATE);
-            getActivity().startService(mIntentService);
-        }
+        initServiceIntent();
     }
 
     @Override
@@ -424,7 +390,43 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
             playbackPaused = false;
         }
 
-        controller.show(0);
+        showController();
+    }
+
+    private void initServiceIntent() {
+        if (mIntentService == null) {
+            mIntentService = new Intent(getActivity(), MusicService.class);
+            getActivity().bindService(mIntentService, musicConnection, Context.BIND_AUTO_CREATE);
+            getActivity().startService(mIntentService);
+        }
+    }
+
+    private void dialogPlaylist(String name) {
+        alertDialog.setTitle("Playlist launch");
+        alertDialog.setMessage("Playlist " + name + " is currently playing, enjoy !");
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        alertDialog.show();
+    }
+
+    private void dialogError() {
+        alertDialog.setTitle("No match");
+        alertDialog.setMessage("You have no songs that fit your current mood, try to add new songs on your phone and refresh the playlists !");
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        alertDialog.show();
     }
 
     private void initListWithMood() {

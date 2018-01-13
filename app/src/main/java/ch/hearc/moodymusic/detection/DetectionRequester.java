@@ -93,6 +93,8 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
             response = httpclient.execute(httppost);
         } catch (IOException e) {
             e.printStackTrace();
+            error = e.getMessage();
+            return null;
         }
 
         HttpEntity resEntity = response.getEntity();
@@ -111,6 +113,7 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             error = e.getMessage();

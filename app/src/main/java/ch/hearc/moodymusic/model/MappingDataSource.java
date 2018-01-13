@@ -55,7 +55,7 @@ public class MappingDataSource extends DataSource {
         Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_MAPPING, mAllColumns, DatabaseHandler.MAPPING_MOOD_ID + " = " + moodId,
                 null, null, null, null);
 
-        List<Long> moodPlaylistIds = new ArrayList<>();
+        List<Long> moodPlaylistIds = new ArrayList<>(cursor.getCount());
         cursor.moveToFirst();
 
         while (!cursor.isAfterLast()) {
