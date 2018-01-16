@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import ch.hearc.moodymusic.classification.ClassificationTask;
 import ch.hearc.moodymusic.ui.PlayerFragment;
 import ch.hearc.moodymusic.ui.SlidingTabLayout;
 import ch.hearc.moodymusic.ui.ViewPagerAdapter;
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mToolBar = (Toolbar) findViewById(R.id.nav_bar);
+        setSupportActionBar(mToolBar);
+
         setupUi();
 
 //        ClassificationEngine classificationEngine = new ClassificationEngine(this);
@@ -39,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
         mTabTitles[0] = getString(R.string.detect_name);
         mTabTitles[1] = getString(R.string.player_name);
 
-        mToolBar = (Toolbar) findViewById(R.id.nav_bar);
-        setSupportActionBar(mToolBar);
+
 
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mTabTitles, NUM_TABS);
 
@@ -85,6 +90,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mTabs.setViewPager(mViewPager);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_sync) {
+            ClassificationTask task = new ClassificationTask(this);
+            task.execute();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

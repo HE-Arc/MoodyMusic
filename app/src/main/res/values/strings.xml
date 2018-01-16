@@ -63,4 +63,8 @@
     <string name="Lively">Lively</string>
     <string name="Upbeat">Upbeat</string>
     <string name="Other">Other</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Toolbar -->
+    <string name="sync">Synchronize</string>
 </resources>

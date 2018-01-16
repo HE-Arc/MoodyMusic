@@ -28,28 +28,19 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.CameraView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Set;
 
 import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.detection.DetectionRequester;
@@ -127,13 +118,13 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
             mFabTakePicture.setOnClickListener(mOnClickListener);
         }
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-        }
+//        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+//        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+//
+//        if (actionBar != null) {
+//            actionBar.setDisplayShowTitleEnabled(false);
+//        }
 
         return view;
     }
@@ -189,48 +180,48 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.v(TAG, "MENU");
-        inflater.inflate(R.menu.main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        Log.v(TAG, "MENU");
+//        inflater.inflate(R.menu.main, menu);
+//        super.onCreateOptionsMenu(menu, inflater);
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.aspect_ratio:
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-
-                if (mCameraView != null
-                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
-                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
-                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
-                    AspectRatioFragment.newInstance(ratios, currentRatio)
-                            .show(fragmentManager, FRAGMENT_DIALOG);
-                }
-                return true;
-            case R.id.switch_flash:
-                if (mCameraView != null) {
-                    mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
-                    item.setTitle(FLASH_TITLES[mCurrentFlash]);
-                    item.setIcon(FLASH_ICONS[mCurrentFlash]);
-                    mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
-                }
-                return true;
-            case R.id.switch_camera:
-                if (mCameraView != null) {
-                    int facing = mCameraView.getFacing();
-                    mCameraView.setFacing(facing == CameraView.FACING_FRONT ?
-                            CameraView.FACING_BACK : CameraView.FACING_FRONT);
-                }
-                return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.aspect_ratio:
+//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//
+//                if (mCameraView != null
+//                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
+//                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
+//                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
+//                    AspectRatioFragment.newInstance(ratios, currentRatio)
+//                            .show(fragmentManager, FRAGMENT_DIALOG);
+//                }
+//                return true;
+//            case R.id.switch_flash:
+//                if (mCameraView != null) {
+//                    mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
+//                    item.setTitle(FLASH_TITLES[mCurrentFlash]);
+//                    item.setIcon(FLASH_ICONS[mCurrentFlash]);
+//                    mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
+//                }
+//                return true;
+//            case R.id.switch_camera:
+//                if (mCameraView != null) {
+//                    int facing = mCameraView.getFacing();
+//                    mCameraView.setFacing(facing == CameraView.FACING_FRONT ?
+//                            CameraView.FACING_BACK : CameraView.FACING_FRONT);
+//                }
+//                return true;
+//        }
+//        return false;
+//    }
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
