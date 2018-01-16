@@ -45,7 +45,7 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
         super.onPreExecute();
 
         mProgressDialog.setMessage("Playlists are being refreshed, this may take a moment...");
-        mProgressDialog.setCancelable(true);
+        mProgressDialog.setCancelable(false);
         mProgressDialog.show();
 
         mError = "";

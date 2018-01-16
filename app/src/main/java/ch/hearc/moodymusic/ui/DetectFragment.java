@@ -114,6 +114,7 @@ public class DetectFragment extends Fragment implements ActivityCompat.OnRequest
         }
 
         mFabTakePicture = (FloatingActionButton) view.findViewById(R.id.take_picture);
+        mFabTakePicture.setImageResource(R.drawable.ic_photo_camera);
         if (mFabTakePicture != null) {
             mFabTakePicture.setOnClickListener(mOnClickListener);
         }
