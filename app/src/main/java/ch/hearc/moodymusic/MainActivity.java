@@ -27,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupUi();
+
+//        ClassificationEngine classificationEngine = new ClassificationEngine(this);
+//        classificationEngine.initializeDatabaseWithSongs(0);
+//        ClassificationTask classificationTask = new ClassificationTask(this);
+//        classificationTask.execute();
     }
 
     private void setupUi() {

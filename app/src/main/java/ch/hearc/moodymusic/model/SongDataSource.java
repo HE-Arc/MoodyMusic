@@ -3,6 +3,8 @@ package ch.hearc.moodymusic.model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ public class SongDataSource extends DataSource {
     private String[] mAllColumns = {DatabaseHandler.SONG_ID, DatabaseHandler.SONG_PATH, DatabaseHandler.SONG_ARTIST,
             DatabaseHandler.SONG_TITLE, DatabaseHandler.SONG_ALBUM,
             DatabaseHandler.SONG_MOOD_PLAYLIST_ID, DatabaseHandler.SONG_USER_MOOD_PLAYLIST_ID};
+
+    private final Uri URI_MEDIASTORE = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
     public SongDataSource(Context context) {
         super(context);
@@ -74,7 +78,7 @@ public class SongDataSource extends DataSource {
     public ArrayList<Song> getSongListByMoodId(long moodId) {
         Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_MOOD_PLAYLIST_ID + " = ?",
                 new String[]{Long.toString(moodId)}, null, null, null);
-        ArrayList<Song> listSong = new ArrayList<Song>();
+        ArrayList<Song> listSong = new ArrayList<Song>(cursor.getCount());
 
         while (cursor.moveToNext()) {
             Song song = cursorToSong(cursor);
@@ -101,6 +105,92 @@ public class SongDataSource extends DataSource {
         cursor.close();
 
         return count;
+    }
+
+    public void refreshSongTable() {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, null,
+                null, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            Song song = cursorToSong(cursor);
+            removeIfNotOnPhone(song);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        addSongsFromMediaStore(0);
+    }
+
+    public void addSongsFromMediaStore(int minDuration) {
+        String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+
+        final String[] projection = new String[]{
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DURATION}; //DATA = PATH
+        Cursor cursor = null;
+
+        try {
+            cursor = mContext.getContentResolver().query(URI_MEDIASTORE, projection, selection, new String[]{}, null);
+
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    if (Integer.parseInt(cursor.getString(4)) > minDuration) {
+                        if (songExist(cursor.getString(3))) {
+                            createSong(cursor.getString(3), cursor.getString(0), cursor.getString(1),
+                                    cursor.getString(2), null, null);
+                        }
+                    }
+                    cursor.moveToNext();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    public void removeIfNotOnPhone(Song song) {
+        String selection = MediaStore.Audio.Media.DATA + " = ?";
+
+        final String[] projection = new String[]{MediaStore.Audio.Media.DATA,}; //DATA = PATH
+        Cursor cursor = null;
+
+        try {
+            cursor = mContext.getContentResolver().query(URI_MEDIASTORE, projection, selection, new String[]{song.getPath()}, null);
+
+            if (cursor.getCount() == 0) {
+                deleteSong(song);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    public boolean songExist(String path) {
+        Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_PATH + " = ?",
+                new String[]{path}, null, null, null, null);
+
+        if (cursor.getCount() == 0) {
+            cursor.close();
+            return false;
+        } else {
+            cursor.close();
+            return true;
+        }
     }
 
     public void clearSongs() {

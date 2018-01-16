@@ -141,11 +141,6 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_player, container, false);
 
-//        ClassificationEngine classificationEngine = new ClassificationEngine(getContext());
-//        classificationEngine.initializeDatabaseWithSongs(0);
-//        ClassificationTask classificationTask = new ClassificationTask(getContext());
-//        classificationTask.execute();
-
         mListView = (ListView) view.findViewById(R.id.list_player);
         mListView.setOnTouchListener(listenerScrollView);
 
@@ -154,20 +149,20 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         mMoodDataSource = new MoodDataSource(getContext());
         mMappingDataSource = new MappingDataSource(getContext());
 
-        mMoodPlaylistDataSource.open();
-        mSongDataSource.open();
-        mMoodDataSource.open();
-        mMappingDataSource.open();
-
-        mMoodDataSource.showTable();
-        mSongDataSource.showTable();
-        mMoodPlaylistDataSource.showTable();
-        mMappingDataSource.showTable();
-
-        mMoodPlaylistDataSource.close();
-        mSongDataSource.close();
-        mMoodDataSource.close();
-        mMappingDataSource.close();
+//        mMoodPlaylistDataSource.open();
+//        mSongDataSource.open();
+//        mMoodDataSource.open();
+//        mMappingDataSource.open();
+//
+//        mMoodDataSource.showTable();
+//        mSongDataSource.showTable();
+//        mMoodPlaylistDataSource.showTable();
+//        mMappingDataSource.showTable();
+//
+//        mMoodPlaylistDataSource.close();
+//        mSongDataSource.close();
+//        mMoodDataSource.close();
+//        mMappingDataSource.close();
 
         setControllerView(view);
 

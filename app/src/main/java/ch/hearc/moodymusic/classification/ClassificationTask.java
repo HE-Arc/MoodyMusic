@@ -56,6 +56,8 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... strings) {
+        mSongDataSource.refreshSongTable();
+
         try {
             /* You first need to register your client information in order to get a userID.
             Best practice is for an application to call this only once, and then cache the userID in
@@ -69,7 +71,6 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
             Song[] newSongs = mSongDataSource.getSongWithNullMood(50);
 
             for (int i = 0; i < newSongs.length; i++) {
-                long songId = newSongs[i].getId();
                 String artist = removeSpecialCharacters(newSongs[i].getArtist());
                 String title = removeSpecialCharacters(newSongs[i].getTitle());
                 String album = newSongs[i].getAlbum();

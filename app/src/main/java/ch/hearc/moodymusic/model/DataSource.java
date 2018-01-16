@@ -12,9 +12,11 @@ public abstract class DataSource {
 
     protected SQLiteDatabase mDatabase;
     private DatabaseHandler mDatabaseHandler;
+    protected Context mContext;
 
     public DataSource(Context context) {
         mDatabaseHandler = new DatabaseHandler(context);
+        mContext = context;
     }
 
     public SQLiteDatabase open() throws SQLException {
