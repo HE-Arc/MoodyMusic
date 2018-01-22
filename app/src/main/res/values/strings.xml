@@ -67,9 +67,13 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Toolbar -->
-    <string name="sync">Synchronize</string>
+    <string name="menu_sync">Synchronize</string>
+    <string name="menu_about">About</string>
 
     <!-- Refresh function -->
     <string name="dialog_refresh">Playlists are being refreshed, this may take a moment…</string>
+
+    <!-- About Dialog -->
+    <string name="about_message">Moody Music is an app that detect a mood on a face and play a music playlist based on this mood.\n\nThis app has been developed at the He-Arc in Switzerland.</string>
 
 </resources>

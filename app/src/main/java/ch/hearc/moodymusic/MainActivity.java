@@ -1,5 +1,8 @@
 package ch.hearc.moodymusic;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +16,10 @@ import ch.hearc.moodymusic.tools.ConnectivityTools;
 import ch.hearc.moodymusic.ui.PlayerFragment;
 import ch.hearc.moodymusic.ui.SlidingTabLayout;
 import ch.hearc.moodymusic.ui.ViewPagerAdapter;
+
+/**
+ * Main class of the project
+ */
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
@@ -102,17 +109,44 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_sync) {
-            if (ConnectivityTools.isNetworkAvailable(this) && ConnectivityTools.isInternetAvailable()) {
-                ClassificationTask task = new ClassificationTask(this);
-                task.execute();
-            } else {
-                Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
-            }
-
+        switch (id) {
+            case R.id.action_sync:
+                if (ConnectivityTools.isNetworkAvailable(this) && ConnectivityTools.isInternetAvailable()) {
+                    ClassificationTask task = new ClassificationTask(this);
+                    task.execute();
+                } else {
+                    Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.action_about:
+                showAboutDialog();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showAboutDialog() {
+        AlertDialog alertDialog;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            alertDialog = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog).create();
+        } else {
+            alertDialog = new AlertDialog.Builder(this).create();
+        }
+
+        alertDialog.setTitle("About");
+        alertDialog.setMessage(getString(R.string.about_message));
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Nothing
+                    }
+                });
+
+        alertDialog.setIcon(android.R.drawable.ic_dialog_info);
+        alertDialog.show();
     }
 
 }
