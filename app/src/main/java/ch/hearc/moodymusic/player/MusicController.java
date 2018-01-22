@@ -26,7 +26,7 @@ public class MusicController extends MediaController{
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             super.hide();
         }
-        return super.dispatchKeyEvent(event);
+        return false;
     }
 
 }

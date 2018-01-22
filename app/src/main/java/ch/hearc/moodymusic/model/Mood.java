@@ -2,6 +2,7 @@ package ch.hearc.moodymusic.model;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * Class that represent a line in the table Mood.
  */
 
 public class Mood {

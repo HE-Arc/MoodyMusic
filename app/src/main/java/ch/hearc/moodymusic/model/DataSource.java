@@ -6,10 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * Parent class for all the data sources.
  */
 
 public abstract class DataSource {
-
     protected SQLiteDatabase mDatabase;
     private DatabaseHandler mDatabaseHandler;
     protected Context mContext;

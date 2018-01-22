@@ -2,6 +2,7 @@ package ch.hearc.moodymusic.model;
 
 /**
  * Created by axel.rieben on 04.01.2018.
+ * Class that represent a line in the table Mapping.
  */
 
 public class Mapping {

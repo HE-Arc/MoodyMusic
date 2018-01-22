@@ -7,6 +7,7 @@ import android.util.Log;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * Class giving methods to easily access the data of the table Mood.
  */
 
 public class MoodDataSource extends DataSource {
@@ -87,7 +88,6 @@ public class MoodDataSource extends DataSource {
     }
 
     private Mood cursorToMood(Cursor cursor) {
-        Mood mood = new Mood(cursor.getLong(0), cursor.getString(1));
-        return mood;
+        return new Mood(cursor.getLong(0), cursor.getString(1));
     }
 }

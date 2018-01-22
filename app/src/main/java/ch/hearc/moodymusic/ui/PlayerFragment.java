@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -90,6 +89,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     private boolean playbackPaused = false;
 
     //UI and listeners
+    private boolean isShowingSongs = false;
     private ListView mListView;
     private AlertDialog alertDialog;
 
@@ -136,7 +136,6 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         }
     };
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_player, container, false);
@@ -172,9 +171,12 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    initListWithMood();
+                    if(isShowingSongs) {
+                        initListWithMood();
+                        return true;
+                    }
                 }
-                return true;
+                return false;
             }
         });
 
@@ -231,14 +233,12 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
     public void hideController() {
         if (controller != null) {
-            Log.w(TAG, "HIDED");
             controller.myHide();
         }
     }
 
     public void showController() {
         if (controller != null && controller.isShowing() != true) {
-            Log.w(TAG, "SHOWED");
             controller.show(0);
         }
     }
@@ -430,6 +430,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, mListMoodPlaylist);
         mListView.setAdapter(moodAdapter);
         mListView.setOnItemClickListener(listenerMood);
+        isShowingSongs = false;
         mMoodPlaylistDataSource.close();
     }
 
@@ -439,6 +440,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         SongAdapter songAdapter = new SongAdapter(getContext(), R.layout.player_list_item, mListSong);
         mListView.setAdapter(songAdapter);
         mListView.setOnItemClickListener(listenerSong);
+        isShowingSongs = true;
         mSongDataSource.close();
     }
 

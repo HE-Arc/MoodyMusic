@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * Class giving methods to easily access the data of the table Song.
  */
 
 public class SongDataSource extends DataSource {
@@ -47,7 +48,6 @@ public class SongDataSource extends DataSource {
 
     public void deleteSong(Song song) {
         long id = song.getId();
-        System.out.println("Song deleted with id: " + id);
         mDatabase.delete(DatabaseHandler.TABLE_SONG, DatabaseHandler.SONG_ID + " = " + id, null);
     }
 
@@ -124,7 +124,7 @@ public class SongDataSource extends DataSource {
         addSongsFromMediaStore(0);
     }
 
-    public void addSongsFromMediaStore(int minDuration) {
+    private void addSongsFromMediaStore(int minDuration) {
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
         final String[] projection = new String[]{
@@ -159,7 +159,7 @@ public class SongDataSource extends DataSource {
         }
     }
 
-    public void removeIfNotOnPhone(Song song) {
+    private void removeIfNotOnPhone(Song song) {
         String selection = MediaStore.Audio.Media.DATA + " = ?";
 
         final String[] projection = new String[]{MediaStore.Audio.Media.DATA,}; //DATA = PATH
@@ -180,7 +180,7 @@ public class SongDataSource extends DataSource {
         }
     }
 
-    public boolean songExist(String path) {
+    private boolean songExist(String path) {
         Cursor cursor = mDatabase.query(DatabaseHandler.TABLE_SONG, mAllColumns, DatabaseHandler.SONG_PATH + " = ?",
                 new String[]{path}, null, null, null, null);
 
@@ -213,9 +213,8 @@ public class SongDataSource extends DataSource {
     }
 
     private Song cursorToSong(Cursor cursor) {
-        Song song = new Song(cursor.getLong(0), cursor.getString(1),
+        return new Song(cursor.getLong(0), cursor.getString(1),
                 cursor.getString(2), cursor.getString(3),
                 cursor.getString(4), cursor.getLong(5), cursor.getLong(6));
-        return song;
     }
 }

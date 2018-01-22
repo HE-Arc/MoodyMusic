@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * Class giving methods to easily access the data of the table Mapping.
  */
 
 public class MappingDataSource extends DataSource {
@@ -84,7 +85,6 @@ public class MappingDataSource extends DataSource {
     }
 
     private Mapping cursorToMapping(Cursor cursor) {
-        Mapping mapping = new Mapping(cursor.getLong(0), cursor.getLong(1), cursor.getLong(2));
-        return mapping;
+        return new Mapping(cursor.getLong(0), cursor.getLong(1), cursor.getLong(2));
     }
 }

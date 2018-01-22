@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * Class giving methods to easily access the data of the table MoodPlaylist.
  */
 
 public class MoodPlaylistDataSource extends DataSource {
@@ -118,7 +119,6 @@ public class MoodPlaylistDataSource extends DataSource {
     }
 
     private MoodPlaylist cursorToMoodPlaylist(Cursor cursor) {
-        MoodPlaylist moodPlaylist = new MoodPlaylist(cursor.getLong(0), cursor.getString(1));
-        return moodPlaylist;
+        return new MoodPlaylist(cursor.getLong(0), cursor.getString(1));
     }
 }
