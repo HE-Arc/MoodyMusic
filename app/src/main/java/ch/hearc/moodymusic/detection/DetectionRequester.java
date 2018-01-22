@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,6 +29,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 
+import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.ui.PlayerFragment;
 
 import static ch.hearc.moodymusic.tools.Constants.SKY_API_KEY;
@@ -38,40 +40,45 @@ import static ch.hearc.moodymusic.tools.Constants.SKY_API_SEC;
  */
 
 public class DetectionRequester extends AsyncTask<String, Integer, String> {
-
     public static final String TAG = "DetectionRequester";
 
-    private ProgressDialog progressDialog;
-    private AlertDialog alertDialog;
-    private String error;
-    private Context context;
-    private PlayerFragment playerFragment;
+    //Input
+    private Context mContext;
+    private PlayerFragment mPlayerFragment;
+
+    //Dialog
+    private ProgressDialog mProgressDialog;
+    private AlertDialog mAlertDialog;
+
+    //Tool
+    private String mError;
 
     public DetectionRequester(Context context, PlayerFragment playerFragment) {
-        progressDialog = new ProgressDialog(context);
-        this.context = context;
-        this.playerFragment = playerFragment;
+        mProgressDialog = new ProgressDialog(context);
+        this.mContext = context;
+        this.mPlayerFragment = playerFragment;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
 
-        progressDialog.setMessage("Please wait during processing");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        mProgressDialog.setMessage("Please wait during processing");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
 
-        error = "";
+        mError = "";
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            alertDialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog).create();
+            mAlertDialog = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog).create();
         } else {
-            alertDialog = new AlertDialog.Builder(context).create();
+            mAlertDialog = new AlertDialog.Builder(mContext).create();
         }
     }
 
     @Override
     protected String doInBackground(String... strings) {
+        //Create HTTP Request
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
         httpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
@@ -79,21 +86,23 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
         HttpClient httpclient = new DefaultHttpClient(httpParams);
 
         HttpPost httppost = new HttpPost("http://api.skybiometry.com/fc/faces/detect.json?api_key=" + SKY_API_KEY + "&api_secret=" + SKY_API_SEC + "&attributes=mood");
-        File file = new File(strings[0]);
 
+        //Get the photo and put it in body of the request
+        File file = new File(strings[0]);
         MultipartEntity mpEntity = new MultipartEntity();
         ContentBody cbFile = new FileBody(file, "image/jpeg");
         mpEntity.addPart("userfile", cbFile);
 
         httppost.setEntity(mpEntity);
-        System.out.println("executing request " + httppost.getRequestLine());
+        Log.w(TAG, "executing request " + httppost.getRequestLine());
 
-        HttpResponse response = null;
+        //Get the response
+        HttpResponse response;
         try {
             response = httpclient.execute(httppost);
         } catch (IOException e) {
             e.printStackTrace();
-            error = e.getMessage();
+            mError = e.getMessage();
             return null;
         }
 
@@ -104,7 +113,7 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
         try {
             if (resEntity != null) {
                 String requestResult = EntityUtils.toString(resEntity);
-                System.out.println(requestResult);
+                Log.w(TAG, requestResult);
                 moodResult = decodeJson(requestResult);
             }
 
@@ -116,13 +125,20 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
-            error = e.getMessage();
+            mError = e.getMessage();
         }
 
         httpclient.getConnectionManager().shutdown();
         return moodResult;
     }
 
+    /**
+     * Decode the JSON response
+     *
+     * @param result
+     * @return
+     * @throws Exception
+     */
     private String decodeJson(String result) throws Exception {
         try {
             JSONObject jsonResponse = new JSONObject(result);
@@ -159,50 +175,50 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        if (progressDialog.isShowing()) {
-            progressDialog.dismiss();
+        if (mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
         }
 
         showDialogMood(result);
     }
 
     private void showDialogMood(final String mood) {
+        //Show result to the user in a dialog
         if (mood != null) {
-            alertDialog.setTitle("Mood Detection");
-            alertDialog.setMessage("You seem to be " + mood + " !\n\n" + "Would you like to play some music that fit your current mood ?");
-            alertDialog.setCancelable(false);
+            mAlertDialog.setTitle("Mood Detection");
+            mAlertDialog.setMessage(mContext.getString(R.string.detection_result, mood));
+            mAlertDialog.setCancelable(false);
 
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+            mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            playerFragment.launchPlaylist(mood);
+                            mPlayerFragment.launchPlaylist(mood);
                         }
                     });
 
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+            mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                         }
                     });
 
-            alertDialog.setIcon(android.R.drawable.ic_dialog_info);
+            mAlertDialog.setIcon(android.R.drawable.ic_dialog_info);
 
         } else {
-            alertDialog.setTitle("Sorry");
-            alertDialog.setMessage(error + " !");
+            mAlertDialog.setTitle("Sorry");
+            mAlertDialog.setMessage(mError + " !");
 
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+            mAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             //Nothing
                         }
                     });
 
-            alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+            mAlertDialog.setIcon(android.R.drawable.ic_dialog_alert);
         }
 
-        alertDialog.show();
+        mAlertDialog.show();
     }
-
 }

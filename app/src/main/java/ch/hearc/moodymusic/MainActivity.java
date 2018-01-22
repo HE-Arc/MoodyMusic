@@ -6,14 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import ch.hearc.moodymusic.classification.ClassificationTask;
+import ch.hearc.moodymusic.tools.ConnectivityTools;
 import ch.hearc.moodymusic.ui.PlayerFragment;
 import ch.hearc.moodymusic.ui.SlidingTabLayout;
 import ch.hearc.moodymusic.ui.ViewPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
-
     public static final String TAG = "MainActivity";
 
     //UI
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         mTabTitles = new CharSequence[NUM_TABS];
         mTabTitles[0] = getString(R.string.detect_name);
         mTabTitles[1] = getString(R.string.player_name);
-
 
 
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mTabTitles, NUM_TABS);
@@ -103,8 +103,13 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_sync) {
-            ClassificationTask task = new ClassificationTask(this);
-            task.execute();
+            if (ConnectivityTools.isNetworkAvailable(this) && ConnectivityTools.isInternetAvailable()) {
+                ClassificationTask task = new ClassificationTask(this);
+                task.execute();
+            } else {
+                Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
+            }
+
         }
 
         return super.onOptionsItemSelected(item);

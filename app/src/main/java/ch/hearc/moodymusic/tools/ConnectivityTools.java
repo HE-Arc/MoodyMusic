@@ -12,12 +12,21 @@ import java.io.IOException;
 
 public class ConnectivityTools {
 
+    /**
+     * Check if the device is connected to an access point
+     * @param context
+     * @return
+     */
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
+    /**
+     * Check if internet access is available
+     * @return
+     */
     public static boolean isInternetAvailable() {
         Runtime runtime = Runtime.getRuntime();
 

@@ -23,6 +23,7 @@
     <!-- Detection -->
     <string name="no_connection">Error impossible to reach the web service</string>
     <string name="no_face">"No face has been detected"</string>
+    <string name="detection_result">You seem to be %1$s !\n\nWould you like to play some music that fit your current mood ?</string>
 
     <!-- Connectivity -->
     <string name="no_internet">You need an internet connection to use this functionality</string>
@@ -67,4 +68,8 @@
 
     <!-- Toolbar -->
     <string name="sync">Synchronize</string>
+
+    <!-- Refresh function -->
+    <string name="dialog_refresh">Playlists are being refreshed, this may take a moment…</string>
+
 </resources>

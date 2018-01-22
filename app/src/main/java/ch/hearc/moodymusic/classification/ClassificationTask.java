@@ -1,12 +1,16 @@
 package ch.hearc.moodymusic.classification;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
 
+import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.model.MoodPlaylistDataSource;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
@@ -24,12 +28,16 @@ import static ch.hearc.moodymusic.tools.Constants.GRACE_USER_ID;
  */
 
 public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
-
     public static final String TAG = "ClassificationTask";
 
-    private ProgressDialog mProgressDialog;
-    private String mError;
+    //Input
     private Context mContext;
+
+    //Dialog
+    private ProgressDialog mProgressDialog;
+    private AlertDialog mAlertDialog;
+
+    //Data
     private SongDataSource mSongDataSource;
     private MoodPlaylistDataSource mMoodPlaylistDataSource;
 
@@ -44,11 +52,15 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
     protected void onPreExecute() {
         super.onPreExecute();
 
-        mProgressDialog.setMessage("Playlists are being refreshed, this may take a moment...");
+        mProgressDialog.setMessage(mContext.getString(R.string.dialog_refresh));
         mProgressDialog.setCancelable(false);
         mProgressDialog.show();
 
-        mError = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mAlertDialog = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog).create();
+        } else {
+            mAlertDialog = new AlertDialog.Builder(mContext).create();
+        }
 
         mSongDataSource.open();
         mMoodPlaylistDataSource.open();
@@ -59,49 +71,42 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
         mSongDataSource.refreshSongTable();
 
         try {
-            /* You first need to register your client information in order to get a userID.
-            Best practice is for an application to call this only once, and then cache the userID in
-            persistent storage, then only use the userID for subsequent API calls. The class will cache
-            it for just this session on your behalf, but TODO you should store it yourself. */
-
+            /* TODO register and store user id in cache on first app launch */
             GracenoteWebAPI api = new GracenoteWebAPI(GRACE_CLIENT_ID, GRACE_CLIENT_TAG, GRACE_USER_ID);
-            String userID = api.register();
+            api.register();
             GracenoteMetadata results;
 
-            Song[] newSongs = mSongDataSource.getSongWithNullMood(50);
+            Song[] newSongs = mSongDataSource.getSongWithNullMood(100);
 
-            for (int i = 0; i < newSongs.length; i++) {
-                String artist = removeSpecialCharacters(newSongs[i].getArtist());
-                String title = removeSpecialCharacters(newSongs[i].getTitle());
-                String album = newSongs[i].getAlbum();
+            for (Song newSong : newSongs) {
+                String artist = removeSpecialCharacters(newSong.getArtist());
+                String title = removeSpecialCharacters(newSong.getTitle());
 
                 if (!artist.isEmpty() && !title.isEmpty()) {
                     results = api.searchTrack(artist, "", title);
 
-                    if(results != null) {
+                    if (results != null) {
                         ArrayList<GracenoteMetadataOET> moods = (ArrayList<GracenoteMetadataOET>) results.getAlbumData(0, "mood");
 
                         switch (moods.size()) {
                             case 0:
                                 Log.w(TAG, title + " no mood ");
-                                setOtherMoodSong(newSongs[i]);
+                                setOtherMoodSong(newSong);
                                 break;
                             case 1:
                                 Log.w(TAG, title + " one mood : " + moods.get(0).getText());
-                                updateMoodFromSong(newSongs[i], moods.get(0).getText());
+                                updateMoodFromSong(newSong, moods.get(0).getText());
                                 break;
                             case 2:
                                 Log.w(TAG, title + " " + " two mood : " + moods.get(0).getText() + " " + moods.get(1).getText());
-                                updateMoodFromSong(newSongs[i], moods.get(0).getText());
+                                updateMoodFromSong(newSong, moods.get(0).getText());
                                 break;
                             default:
                                 Log.w(TAG, title + " error");
-                                setOtherMoodSong(newSongs[i]);
+                                setOtherMoodSong(newSong);
                         }
-                    }
-                    else
-                    {
-                        setOtherMoodSong(newSongs[i]);
+                    } else {
+                        setOtherMoodSong(newSong);
                     }
                 }
             }
@@ -126,12 +131,17 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
         mSongDataSource.updateMood(song.getId(), moodId);
     }
 
+    /**
+     * Remove special characters that generate errors
+     *
+     * @param input
+     * @return
+     */
     private String removeSpecialCharacters(String input) {
         final String[] metaCharacters = {"\\", "^", "$", "{", "}", "[", "]", "(", ")", ".", "*", "+", "?", "|", "<", ">", "-", "&"};
 
         for (int i = 0; i < metaCharacters.length; i++) {
             if (input.contains(metaCharacters[i])) {
-//                output = input.replace(metaCharacters[i], "\\" + metaCharacters[i]);
                 input.replace(metaCharacters[i], "");
 
             }
@@ -145,9 +155,26 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
         super.onPostExecute(result);
 
         mSongDataSource.close();
+        mMoodPlaylistDataSource.close();
 
         if (mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
+        }
+
+        if (result == false) {
+            //Show error dialog
+            mAlertDialog.setTitle("Sorry");
+            mAlertDialog.setMessage("An error has occured during refresh !");
+
+            mAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Nothing
+                        }
+                    });
+
+            mAlertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+            mAlertDialog.show();
         }
     }
 }

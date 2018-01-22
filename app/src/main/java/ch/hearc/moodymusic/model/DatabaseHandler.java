@@ -7,6 +7,7 @@ import android.util.Log;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * Class that describe, create, upgrade and delete the SQlite Database
  */
 
 public class DatabaseHandler extends SQLiteOpenHelper {
@@ -43,6 +44,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
 
     //SQL create tables
+
+    //Table Song
     private static final String TABLE_SONG_CREATE = "CREATE TABLE " + TABLE_SONG + "("
             + SONG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + SONG_PATH + " TEXT NOT NULL, "
@@ -53,16 +56,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             + SONG_USER_MOOD_PLAYLIST_ID + " INTEGER"
             + ");";
 
+    //Table Mood
     private static final String TABLE_MOOD_CREATE = "CREATE TABLE " + TABLE_MOOD + "("
             + MOOD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + MOOD_NAME + " TEXT NOT NULL"
             + ");";
 
+    //Table Mood Playlist
     private static final String TABLE_MOOD_PLAYLIST_CREATE = "CREATE TABLE " + TABLE_MOOD_PLAYLIST + "("
             + MOOD_PLAYLIST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + MOOD_PLAYLIST_NAME + " TEXT NOT NULL"
             + ");";
 
+    //Table Mapping
     private static final String TABLE_MAPPING_CREATE = "CREATE TABLE " + TABLE_MAPPING + "("
             + MAPPING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + MAPPING_MOOD_ID + " INTEGER, "
@@ -171,5 +177,4 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         database.execSQL("DROP TABLE IF EXISTS " + TABLE_MAPPING);
         onCreate(database);
     }
-
 }

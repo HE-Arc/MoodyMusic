@@ -10,13 +10,16 @@ import ch.hearc.moodymusic.model.SongDataSource;
 
 /**
  * Created by axel.rieben on 21.11.2017.
+ * This class is not really used for the moment but can be used to init database on the app first launch
  */
 
 public class ClassificationEngine {
-
     public static final String TAG = "ClassificationEngine";
 
+    //Input
     private Context mContext;
+
+    //Data
     private SongDataSource mSongDataSource;
 
     public ClassificationEngine(Context context) {
@@ -72,6 +75,4 @@ public class ClassificationEngine {
 
         thread.start();
     }
-
-
 }
