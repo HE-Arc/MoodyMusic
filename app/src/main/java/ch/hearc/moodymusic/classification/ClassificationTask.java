@@ -120,13 +120,13 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
     }
 
     private void updateMoodFromSong(Song song, String mood) {
-        Log.w(TAG, "Update song : " + song + " mood : " + mood);
+        Log.w(TAG, "Update song : " + song.getTitle() + " mood : " + mood);
         long moodId = mMoodPlaylistDataSource.getMoodPlaylistId(mood);
         mSongDataSource.updateMood(song.getId(), moodId);
     }
 
     private void setOtherMoodSong(Song song) {
-        Log.w(TAG, "Update song : " + song + " mood : Other");
+        Log.w(TAG, "Update song : " + song.getTitle() + " mood : Other");
         long moodId = mMoodPlaylistDataSource.getMoodPlaylistId("Other");
         mSongDataSource.updateMood(song.getId(), moodId);
     }

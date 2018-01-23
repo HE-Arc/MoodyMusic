@@ -41,7 +41,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //Database
     private static final String DATABASE_NAME = "moodymusic.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     //SQL create tables
 

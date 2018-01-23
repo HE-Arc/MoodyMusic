@@ -142,7 +142,7 @@ public class SongDataSource extends DataSource {
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
                     if (Integer.parseInt(cursor.getString(4)) > minDuration) {
-                        if (songExist(cursor.getString(3))) {
+                        if (!songExist(cursor.getString(3))) {
                             createSong(cursor.getString(3), cursor.getString(0), cursor.getString(1),
                                     cursor.getString(2), null, null);
                         }

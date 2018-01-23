@@ -32,6 +32,7 @@ public class MusicService extends Service implements
 
     //Notification
     private String mSongTitle;
+    private String mSongArtist;
     private static final int NOTIFY_ID = 1;
 
     //Media player
@@ -88,6 +89,7 @@ public class MusicService extends Service implements
         mMediaPlayer.reset();
         Song playSong = mlistSongs.get(mSongPosition);
         mSongTitle = playSong.getTitle();
+        mSongArtist = playSong.getArtist();
         String currSong = playSong.getPath();
 //        Uri trackUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
 
@@ -208,7 +210,7 @@ public class MusicService extends Service implements
                 .setTicker(mSongTitle)
                 .setOngoing(true)
                 .setContentTitle("Playing")
-                .setContentText(mSongTitle);
+                .setContentText(mSongArtist + " - " + mSongTitle);
         Notification not = builder.build();
 
         startForeground(NOTIFY_ID, not);
