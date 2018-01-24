@@ -22,6 +22,7 @@ import ch.hearc.moodymusic.model.Song;
 
 /**
  * Created by axel.rieben on 12.12.2017.
+ * Service used to play music in background, it implements public method to control the Mediaplayer.
  */
 
 public class MusicService extends Service implements
@@ -91,7 +92,6 @@ public class MusicService extends Service implements
         mSongTitle = playSong.getTitle();
         mSongArtist = playSong.getArtist();
         String currSong = playSong.getPath();
-//        Uri trackUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currSong);
 
         try {
             mMediaPlayer.setDataSource(getApplicationContext(), Uri.parse(currSong));
@@ -171,7 +171,7 @@ public class MusicService extends Service implements
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-
+        //Nothing
     }
 
     public class MusicBinder extends Binder {
@@ -194,6 +194,10 @@ public class MusicService extends Service implements
         return false;
     }
 
+    /**
+     * Show a notification with the artist - title of the music currently playing
+     * @param mediaPlayer
+     */
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();

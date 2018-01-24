@@ -6,6 +6,7 @@ import android.widget.MediaController;
 
 /**
  * Created by axel.rieben on 18.12.2017.
+ * This class will create a default set of controls for the music player.
  */
 
 public class MusicController extends MediaController{

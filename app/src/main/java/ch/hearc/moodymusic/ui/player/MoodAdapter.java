@@ -16,6 +16,7 @@ import ch.hearc.moodymusic.model.SongDataSource;
 
 /**
  * Created by axel.rieben on 02.12.2017.
+ * Class used to show playlists in a listview.
  */
 
 public class MoodAdapter extends ArrayAdapter<MoodPlaylist> {

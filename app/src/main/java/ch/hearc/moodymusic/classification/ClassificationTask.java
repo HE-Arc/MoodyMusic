@@ -14,6 +14,7 @@ import ch.hearc.moodymusic.R;
 import ch.hearc.moodymusic.model.MoodPlaylistDataSource;
 import ch.hearc.moodymusic.model.Song;
 import ch.hearc.moodymusic.model.SongDataSource;
+import ch.hearc.moodymusic.tools.Constants;
 import radams.gracenote.webapi.GracenoteException;
 import radams.gracenote.webapi.GracenoteMetadata;
 import radams.gracenote.webapi.GracenoteMetadataOET;
@@ -25,6 +26,8 @@ import static ch.hearc.moodymusic.tools.Constants.GRACE_USER_ID;
 
 /**
  * Created by axel.rieben on 27.11.2017.
+ * Class executing asynchronously requests to Gracenote for every song that hasn't been classified.
+ * It also refresh the database according to songs that are on the phone.
  */
 
 public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
@@ -76,7 +79,7 @@ public class ClassificationTask extends AsyncTask<String, Integer, Boolean> {
             api.register();
             GracenoteMetadata results;
 
-            Song[] newSongs = mSongDataSource.getSongWithNullMood(100);
+            Song[] newSongs = mSongDataSource.getSongWithNullMood(Constants.REFRESH_REQUEST_LIMIT);
 
             for (Song newSong : newSongs) {
                 String artist = removeSpecialCharacters(newSong.getArtist());

@@ -15,6 +15,7 @@ import ch.hearc.moodymusic.model.Song;
 
 /**
  * Created by axel.rieben on 02.12.2017.
+ * Class used to show songs of a playlist in a listview.
  */
 
 public class SongAdapter extends ArrayAdapter<Song> {

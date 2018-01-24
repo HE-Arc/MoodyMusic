@@ -68,7 +68,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     private Intent mIntentService;
     private boolean mIsBound = false;
 
-    private ServiceConnection musicConnection = new ServiceConnection() {
+    private ServiceConnection mMusicConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -84,16 +84,16 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     };
 
     //Music player
-    private MusicController controller;
-    private boolean paused = false;
-    private boolean playbackPaused = false;
+    private MusicController mController;
+    private boolean mPaused = false;
+    private boolean mPlaybackPaused = false;
 
     //UI and listeners
     private boolean isShowingSongs = false;
     private ListView mListView;
-    private AlertDialog alertDialog;
+    private AlertDialog mAlertDialog;
 
-    private AdapterView.OnItemClickListener listenerMood = new AdapterView.OnItemClickListener() {
+    private AdapterView.OnItemClickListener mListenerMood = new AdapterView.OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -102,7 +102,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         }
     };
 
-    private AdapterView.OnItemClickListener listenerSong = new AdapterView.OnItemClickListener() {
+    private AdapterView.OnItemClickListener mListenerSong = new AdapterView.OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -110,7 +110,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         }
     };
 
-    private View.OnTouchListener listenerScrollView = new View.OnTouchListener() {
+    private View.OnTouchListener mListenerScrollView = new View.OnTouchListener() {
         float y0 = 0;
         float y1 = 0;
 
@@ -121,17 +121,28 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
                 y0 = motionEvent.getY();
 
                 if (y1 - y0 > 0) {
-                    controller.myHide();
+                    mController.myHide();
 
                 } else if (y1 - y0 < 0) {
-                    if (!controller.isShowing()) {
-                        controller.show();
+                    if (!mController.isShowing()) {
+                        mController.show();
                     }
                 }
-
                 y1 = motionEvent.getY();
             }
+            return false;
+        }
+    };
 
+    View.OnKeyListener mListenerKey = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (isShowingSongs) {
+                    initListWithMood();
+                    return true;
+                }
+            }
             return false;
         }
     };
@@ -141,51 +152,25 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         View view = inflater.inflate(R.layout.tab_player, container, false);
 
         mListView = (ListView) view.findViewById(R.id.list_player);
-        mListView.setOnTouchListener(listenerScrollView);
+        mListView.setOnTouchListener(mListenerScrollView);
 
         mMoodPlaylistDataSource = new MoodPlaylistDataSource(getContext());
         mSongDataSource = new SongDataSource(getContext());
         mMoodDataSource = new MoodDataSource(getContext());
         mMappingDataSource = new MappingDataSource(getContext());
 
-//        mMoodPlaylistDataSource.open();
-//        mSongDataSource.open();
-//        mMoodDataSource.open();
-//        mMappingDataSource.open();
-//
-//        mMoodDataSource.showTable();
-//        mSongDataSource.showTable();
-//        mMoodPlaylistDataSource.showTable();
-//        mMappingDataSource.showTable();
-//
-//        mMoodPlaylistDataSource.close();
-//        mSongDataSource.close();
-//        mMoodDataSource.close();
-//        mMappingDataSource.close();
-
         setControllerView(view);
 
         view.setFocusableInTouchMode(true);
         view.requestFocus();
-        view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    if(isShowingSongs) {
-                        initListWithMood();
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
+        view.setOnKeyListener(mListenerKey);
 
         initListWithMood();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            alertDialog = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog).create();
+            mAlertDialog = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog).create();
         } else {
-            alertDialog = new AlertDialog.Builder(getContext()).create();
+            mAlertDialog = new AlertDialog.Builder(getContext()).create();
         }
 
         initServiceIntent();
@@ -193,6 +178,10 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         return view;
     }
 
+    /**
+     * Launch playlist after a detection for a giving mood
+     * @param mood
+     */
     public void launchPlaylist(String mood) {
         mMoodDataSource.open();
         mMappingDataSource.open();
@@ -206,6 +195,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         Random random = new Random();
         boolean playlistEmpty = true;
 
+        //Loop in all the playlists available for the detected mood and randomly try to launch one.
         while (moodPlaylistIds.size() != 0 && playlistEmpty) {
             initListWithMood();
             int randListIndex = random.nextInt(moodPlaylistIds.size());
@@ -232,14 +222,14 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     }
 
     public void hideController() {
-        if (controller != null) {
-            controller.myHide();
+        if (mController != null) {
+            mController.myHide();
         }
     }
 
     public void showController() {
-        if (controller != null && controller.isShowing() != true) {
-            controller.show(0);
+        if (mController != null && mController.isShowing() != true) {
+            mController.show(0);
         }
     }
 
@@ -251,7 +241,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
     @Override
     public void onStop() {
-        controller.myHide();
+        mController.myHide();
         getActivity().stopService(mIntentService);
         mMusicService = null;
         super.onStop();
@@ -260,7 +250,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     @Override
     public void onPause() {
         super.onPause();
-        paused = true;
+        mPaused = true;
     }
 
     @Override
@@ -286,9 +276,9 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_PERMISSION);
         }
 
-        if (paused) {
+        if (mPaused) {
             setControllerView(getView());
-            paused = false;
+            mPaused = false;
         }
     }
 
@@ -315,7 +305,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
 
     @Override
     public void pause() {
-        playbackPaused = true;
+        mPlaybackPaused = true;
         mMusicService.pausePlayer();
     }
 
@@ -380,9 +370,9 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         mMusicService.setSong(position);
         mMusicService.playSong();
 
-        if (playbackPaused) {
+        if (mPlaybackPaused) {
             setControllerView(getView());
-            playbackPaused = false;
+            mPlaybackPaused = false;
         }
 
         showController();
@@ -391,37 +381,37 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
     private void initServiceIntent() {
         if (mIntentService == null) {
             mIntentService = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(mIntentService, musicConnection, Context.BIND_AUTO_CREATE);
+            getActivity().bindService(mIntentService, mMusicConnection, Context.BIND_AUTO_CREATE);
             getActivity().startService(mIntentService);
         }
     }
 
     private void dialogPlaylist(String name) {
-        alertDialog.setTitle("Playlist launch");
-        alertDialog.setMessage("Playlist " + name + " is currently playing, enjoy !");
+        mAlertDialog.setTitle("Playlist launch");
+        mAlertDialog.setMessage("Playlist " + name + " is currently playing, enjoy !");
 
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+        mAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
 
-        alertDialog.show();
+        mAlertDialog.show();
     }
 
     private void dialogError() {
-        alertDialog.setTitle("No match");
-        alertDialog.setMessage("You have no songs that fit your current mood, try to add new songs on your phone and refresh the playlists !");
+        mAlertDialog.setTitle("No match");
+        mAlertDialog.setMessage("You have no songs that fit your current mood, try to add new songs on your phone and refresh the playlists !");
 
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+        mAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
 
-        alertDialog.show();
+        mAlertDialog.show();
     }
 
     private void initListWithMood() {
@@ -429,7 +419,7 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         mListMoodPlaylist = mMoodPlaylistDataSource.getMoodPlaylistList();
         MoodAdapter moodAdapter = new MoodAdapter(getContext(), R.layout.player_list_item, mListMoodPlaylist);
         mListView.setAdapter(moodAdapter);
-        mListView.setOnItemClickListener(listenerMood);
+        mListView.setOnItemClickListener(mListenerMood);
         isShowingSongs = false;
         mMoodPlaylistDataSource.close();
     }
@@ -439,15 +429,15 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
         mListSong = mSongDataSource.getSongListByMoodId(moodId);
         SongAdapter songAdapter = new SongAdapter(getContext(), R.layout.player_list_item, mListSong);
         mListView.setAdapter(songAdapter);
-        mListView.setOnItemClickListener(listenerSong);
+        mListView.setOnItemClickListener(mListenerSong);
         isShowingSongs = true;
         mSongDataSource.close();
     }
 
     private void setControllerView(View view) {
-        if (controller == null) {
-            controller = new MusicController(getActivity());
-            controller.setPrevNextListeners(new View.OnClickListener() {
+        if (mController == null) {
+            mController = new MusicController(getActivity());
+            mController.setPrevNextListeners(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     playNext();
@@ -458,27 +448,27 @@ public class PlayerFragment extends Fragment implements MediaPlayerControl {
                     playPrev();
                 }
             });
-            controller.setMediaPlayer(this);
-            controller.setAnchorView(view.findViewById(R.id.list_player));
-            controller.setEnabled(true);
+            mController.setMediaPlayer(this);
+            mController.setAnchorView(view.findViewById(R.id.list_player));
+            mController.setEnabled(true);
         }
     }
 
     private void playNext() {
         mMusicService.playNext();
-        if (playbackPaused) {
+        if (mPlaybackPaused) {
             setControllerView(getView());
-            playbackPaused = false;
+            mPlaybackPaused = false;
         }
-        controller.show(0);
+        mController.show(0);
     }
 
     private void playPrev() {
         mMusicService.playPrev();
-        if (playbackPaused) {
+        if (mPlaybackPaused) {
             setControllerView(getView());
-            playbackPaused = false;
+            mPlaybackPaused = false;
         }
-        controller.show(0);
+        mController.show(0);
     }
 }

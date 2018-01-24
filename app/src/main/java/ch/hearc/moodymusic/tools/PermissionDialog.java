@@ -9,6 +9,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 
+/**
+ * Class for the creation of a dialogs for permission requesting.
+ */
 public class PermissionDialog {
 
     public static class ConfirmationDialogFragment extends DialogFragment {
@@ -51,13 +54,12 @@ public class PermissionDialog {
                                 }
                             })
                     .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getActivity(), args.getInt(ARG_NOT_GRANTED_MESSAGE), Toast.LENGTH_SHORT).show();
-                                }
-                            })
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getActivity(), args.getInt(ARG_NOT_GRANTED_MESSAGE), Toast.LENGTH_SHORT).show();
+                        }
+                    })
                     .create();
         }
-
     }
 }

@@ -41,11 +41,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolBar);
 
         setupUi();
-
-//        ClassificationEngine classificationEngine = new ClassificationEngine(this);
-//        classificationEngine.initializeDatabaseWithSongs(0);
-//        ClassificationTask classificationTask = new ClassificationTask(this);
-//        classificationTask.execute();
     }
 
     private void setupUi() {
@@ -53,10 +48,7 @@ public class MainActivity extends AppCompatActivity {
         mTabTitles[0] = getString(R.string.detect_name);
         mTabTitles[1] = getString(R.string.player_name);
 
-
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), mTabTitles, NUM_TABS);
-
-
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mViewPagerAdapter);
 

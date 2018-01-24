@@ -37,6 +37,7 @@ import static ch.hearc.moodymusic.tools.Constants.SKY_API_SEC;
 
 /**
  * Created by axel.rieben on 12.11.2017.
+ * Class executing asynchronously a HTTP request to SkyBiometry and showing the result in an Alertdialog.
  */
 
 public class DetectionRequester extends AsyncTask<String, Integer, String> {
@@ -82,9 +83,7 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
         httpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-
         HttpClient httpclient = new DefaultHttpClient(httpParams);
-
         HttpPost httppost = new HttpPost("http://api.skybiometry.com/fc/faces/detect.json?api_key=" + SKY_API_KEY + "&api_secret=" + SKY_API_SEC + "&attributes=mood");
 
         //Get the photo and put it in body of the request
@@ -108,7 +107,7 @@ public class DetectionRequester extends AsyncTask<String, Integer, String> {
 
         HttpEntity resEntity = response.getEntity();
 
-        System.out.println(response.getStatusLine());
+        Log.w(TAG, response.getStatusLine().toString());
         String moodResult = null;
         try {
             if (resEntity != null) {
