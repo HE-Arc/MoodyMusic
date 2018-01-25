@@ -1,2 +1,2 @@
 # MoodyMusic
-Android app that detect a mood on a face and play a music playlist based on a this mood.
+Android app that detects a mood on a face and plays a music playlist based on a this mood.
