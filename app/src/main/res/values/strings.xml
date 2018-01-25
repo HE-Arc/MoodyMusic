@@ -74,6 +74,6 @@
     <string name="dialog_refresh">Playlists are being refreshed, this may take a moment…</string>
 
     <!-- About Dialog -->
-    <string name="about_message">Moody Music is an app that detect a mood on a face and play a music playlist based on this mood.\n\nThis app has been developed at the He-Arc in Switzerland.\n\nDisclaimer\n\nBy using the application, you agree that some personal data (for example the photo captured by the application) can be send to SkyBiometry or Gracenote web service. The data will only be used to make this application won\'t and wont be shared with anyone else.</string>
+    <string name="about_message">Moody Music is an app that detects a mood on a face and plays a music playlist based on this mood.\n\nThis app has been developed by Axel Rieben at the He-Arc in Switzerland.\n\nDisclaimer\n\nBy using the application, you agree that some personal datas (for example the photo captured by the application) can be send to SkyBiometry or Gracenote web service. The data will only be used to make this application work and won\'t be shared with anyone else.</string>
 
 </resources>
